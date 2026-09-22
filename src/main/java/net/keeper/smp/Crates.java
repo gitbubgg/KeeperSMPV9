@@ -299,8 +299,21 @@ public class Crates implements Listener {
         if (previous != null && now - previous < 400) return;
         lastOpen.put(player.getUniqueId(), now);
 
-        hand.setAmount(hand.getAmount() - 1);
-        open(player, tier, block.getLocation());
+        // Let the ender chest's own use go through instead of flatly denying
+        // it. Non-op players and Bedrock clients near spawn were losing the
+        // whole interaction before this handler even got a say, which a
+        // denied-but-cancelled event can't fix; an allowed one can. It's
+        // force-closed and the loot given a tick later, before anyone can
+        // act on the chest's real (personal) contents.
+        event.setCancelled(false);
+        event.setUseInteractedBlock(Event.Result.ALLOW);
+        Tier openTier = tier;
+        Block openBlock = block;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            player.closeInventory();
+            hand.setAmount(hand.getAmount() - 1);
+            open(player, openTier, openBlock.getLocation());
+        });
     }
 
     /**
