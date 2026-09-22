@@ -35,10 +35,32 @@ jobs:
           FALIX_SFTP_USER: ${{ secrets.FALIX_SFTP_USER }}
           FALIX_SFTP_PASSWORD: ${{ secrets.FALIX_SFTP_PASSWORD }}
         run: |
+          # FALIX_SFTP_HOST may be a bare host, or the whole
+          # "sftp://user@host:port" string the panel shows you. Pull it apart
+          # so either form works.
+          raw="${FALIX_SFTP_HOST#sftp://}"
+          raw="${raw%%/*}"
+          if [[ "$raw" == *"@"* ]]; then
+            embedded_user="${raw%%@*}"
+            raw="${raw#*@}"
+          else
+            embedded_user=""
+          fi
+          host="${raw%%:*}"
+          if [[ "$raw" == *":"* ]]; then
+            embedded_port="${raw#*:}"
+          else
+            embedded_port=""
+          fi
+
+          user="${FALIX_SFTP_USER:-$embedded_user}"
+          port="${FALIX_SFTP_PORT:-${embedded_port:-22}}"
+
+          echo "Connecting to sftp://$host:$port as $user"
           curl -sS --insecure \
-            -u "${FALIX_SFTP_USER}:${FALIX_SFTP_PASSWORD}" \
+            -u "${user}:${FALIX_SFTP_PASSWORD}" \
             -T KeeperSMP.jar \
-            "sftp://${FALIX_SFTP_HOST}:${FALIX_SFTP_PORT}/plugins/KeeperSMP.jar"
+            "sftp://${host}:${port}/plugins/KeeperSMP.jar"
       - name: Restart server so the new jar loads
         env:
           FALIX_PANEL_URL: ${{ secrets.FALIX_PANEL_URL }}
