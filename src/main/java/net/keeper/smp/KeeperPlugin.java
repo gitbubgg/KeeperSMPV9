@@ -13,11 +13,11 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-22 r12 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-22 r13 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
             + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
-            + "elytra-stock, end-loot-strip)";
+            + "elytra-stock, end-loot-strip, forcetpahere)";
 
 
     private Data data;
@@ -77,11 +77,11 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         String[] names = {
                 "menu", "shop", "sell", "autosell", "auction", "sethome", "home", "delhome", "homes",
                 "rtp", "rtpq", "tpa", "tpahere", "tpaccept", "tpdeny", "back", "ec", "craft", "nick",
-                "settings", "rank", "balance", "pay", "grantrank", "eco", "fly", "gmc", "forcetp",
+                "settings", "rank", "balance", "pay", "grantrank", "eco", "fly", "gmc", "forcetpa",
                 "afk", "shardshop", "spectator", "spawnstash", "setcrate", "delcrate", "givekey",
                 "usekey", "clearcrates",
                 "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
-                "daily", "playtime", "upgrade"
+                "daily", "playtime", "upgrade", "forcetpahere"
         };
         for (String name : names) {
             if (getCommand(name) == null) {

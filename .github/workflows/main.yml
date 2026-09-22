@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: KeeperSMP-jar
@@ -115,6 +116,80 @@ jobs:
               "${user}@${host}"
           else
             echo "::warning::Could not download server.properties over SFTP; spawn-protection was left unchanged."
+          fi
+      - name: Merge new config.yml keys onto the server
+        env:
+          FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
+          FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
+          FALIX_SFTP_USER: ${{ secrets.FALIX_SFTP_USER }}
+          FALIX_SFTP_PASSWORD: ${{ secrets.FALIX_SFTP_PASSWORD }}
+        run: |
+          # saveDefaultConfig() only ever writes config.yml once, the very
+          # first time the plugin starts; it never merges new keys into an
+          # existing file. Every config section a later commit adds (shop
+          # entries, daily, playtime, bonus-events, sidebar, end-loot, ...)
+          # would otherwise silently never exist on a server that already
+          # has a config.yml, forever. Pull the live file down, add anything
+          # missing from the repo's default (comments and formatting of
+          # what's already there are left untouched), and push it back.
+          raw="${FALIX_SFTP_HOST#sftp://}"
+          raw="${raw%%/*}"
+          if [[ "$raw" == *"@"* ]]; then
+            embedded_user="${raw%%@*}"
+            raw="${raw#*@}"
+          else
+            embedded_user=""
+          fi
+          host="${raw%%:*}"
+          if [[ "$raw" == *":"* ]]; then
+            embedded_port="${raw#*:}"
+          else
+            embedded_port=""
+          fi
+          user="${FALIX_SFTP_USER:-$embedded_user}"
+          port="${FALIX_SFTP_PORT:-${embedded_port:-22}}"
+
+          export SSHPASS="$FALIX_SFTP_PASSWORD"
+          echo "get plugins/KeeperSMP/config.yml server-config.yml" | sshpass -e sftp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -P "$port" \
+            "${user}@${host}"
+
+          if [ -f server-config.yml ]; then
+            pip install --quiet ruamel.yaml
+            python3 - <<'PYEOF'
+from ruamel.yaml import YAML
+
+yaml = YAML()
+yaml.preserve_quotes = True
+
+with open('server-config.yml') as f:
+    live = yaml.load(f) or {}
+with open('src/main/resources/config.yml') as f:
+    default = yaml.load(f) or {}
+
+def merge(default_node, live_node):
+    if not hasattr(default_node, 'items'):
+        return
+    for key, value in default_node.items():
+        if key not in live_node:
+            live_node[key] = value
+        elif hasattr(value, 'items') and hasattr(live_node.get(key), 'items'):
+            merge(value, live_node[key])
+
+merge(default, live)
+
+with open('server-config.yml', 'w') as f:
+    yaml.dump(live, f)
+PYEOF
+            echo "put server-config.yml plugins/KeeperSMP/config.yml" | sshpass -e sftp \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -P "$port" \
+              "${user}@${host}"
+          else
+            echo "::warning::Could not download config.yml over SFTP; new config keys were not merged."
           fi
       - name: Restart server so the new jar loads
         env:

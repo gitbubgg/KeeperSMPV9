@@ -195,12 +195,20 @@ public class Commands implements CommandExecutor, TabCompleter {
                 player.sendMessage(Util.text("&7Game mode: &f"
                         + player.getGameMode().name().toLowerCase(Locale.ROOT)));
             }
-            case "forcetp" -> {
+            case "forcetpa" -> {
                 if (!rank.isStaff()) return deny(sender, Rank.MOD);
                 Player target = target(player, args);
                 if (target == null) return true;
                 player.teleportAsync(target.getLocation());
                 player.sendMessage(Util.text("&7Teleported to &f" + target.getName() + "&7."));
+            }
+            case "forcetpahere" -> {
+                if (!rank.isStaff()) return deny(sender, Rank.MOD);
+                Player target = target(player, args);
+                if (target == null) return true;
+                target.teleportAsync(player.getLocation());
+                player.sendMessage(Util.text("&7Teleported &f" + target.getName() + " &7to you."));
+                target.sendMessage(Util.text("&7You were teleported to &f" + player.getName() + "&7."));
             }
             case "afk" -> plugin.shards().toggle(player);
 
@@ -568,7 +576,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
                 case "sell" -> out.add("all");
-                case "tpa", "tpahere", "forcetp", "pay", "grantrank" -> {
+                case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank" -> {
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
                 default -> {

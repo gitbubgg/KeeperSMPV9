@@ -78,9 +78,12 @@ commands:
     description: Toggle flight (Mod and above).
   gmc:
     description: Toggle creative mode (Mod and above).
-  forcetp:
-    description: Teleport to a player without asking (Mod and above). /forcetp <player>
-    aliases: [ftp]
+  forcetpa:
+    description: Teleport to a player without asking (Mod and above). /forcetpa <player>
+    aliases: [ftpa]
+  forcetpahere:
+    description: Force a player to teleport to you (Mod and above). /forcetpahere <player>
+    aliases: [ftpahere]
   afk:
     description: Go AFK and earn shards each minute.
   shardshop:
