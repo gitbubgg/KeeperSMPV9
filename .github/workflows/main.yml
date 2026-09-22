@@ -34,11 +34,12 @@ jobs:
           FALIX_SERVER_ID: ${{ secrets.FALIX_SERVER_ID }}
           FALIX_API_KEY: ${{ secrets.FALIX_API_KEY }}
         run: |
-          curl -sSf -X POST \
+          curl -sS --fail-with-body -X POST \
             "${FALIX_PANEL_URL%/}/api/client/servers/${FALIX_SERVER_ID}/files/write?file=%2Fplugins%2FKeeperSMP.jar" \
             -H "Authorization: Bearer ${FALIX_API_KEY}" \
             -H "Content-Type: application/octet-stream" \
             -H "Accept: application/json" \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) KeeperSMP-Deploy" \
             --data-binary @KeeperSMP.jar
       - name: Restart server so the new jar loads
         env:
@@ -46,9 +47,10 @@ jobs:
           FALIX_SERVER_ID: ${{ secrets.FALIX_SERVER_ID }}
           FALIX_API_KEY: ${{ secrets.FALIX_API_KEY }}
         run: |
-          curl -sSf -X POST \
+          curl -sS --fail-with-body -X POST \
             "${FALIX_PANEL_URL%/}/api/client/servers/${FALIX_SERVER_ID}/power" \
             -H "Authorization: Bearer ${FALIX_API_KEY}" \
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
+            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) KeeperSMP-Deploy" \
             -d '{"signal":"restart"}'
