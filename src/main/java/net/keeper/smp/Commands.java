@@ -104,6 +104,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 
             case "pay" -> pay(player, args);
 
+            case "daily" -> plugin.daily().claim(player);
+            case "playtime" -> player.sendMessage(Util.text("&7Total playtime: &f"
+                    + plugin.playtime().formatted(player.getUniqueId())));
+
             case "auction" -> auction(player, args);
 
             case "sethome" -> plugin.homes().set(player, args.length > 0 ? args[0] : "home");

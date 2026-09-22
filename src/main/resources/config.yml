@@ -590,3 +590,49 @@ tnt-spawner:
   # Keeps the spawner from being destroyed by its own TNT. Set false if you
   # would rather it be consumed after a few blasts.
   protect-block: true
+
+# ------------------------------------------------------------
+#  /daily  -  one reward per calendar day. Missing a day resets
+#  the streak back to day 1. The table cycles after cycle-days.
+# ------------------------------------------------------------
+daily:
+  cycle-days: 7
+  rewards:
+    1: { money: 200,  shards: 5 }
+    2: { money: 250,  shards: 6 }
+    3: { money: 300,  shards: 8 }
+    4: { money: 400,  shards: 10 }
+    5: { money: 500,  shards: 12 }
+    6: { money: 650,  shards: 15 }
+    7: { money: 1000, shards: 25 }
+
+# ------------------------------------------------------------
+#  One-time rewards for total playtime. Key is minutes played.
+#  item is optional, item-amount defaults to 1.
+# ------------------------------------------------------------
+playtime:
+  milestones:
+    60:   { money: 500,   shards: 20 }
+    300:  { money: 1500,  shards: 60 }
+    600:  { money: 3000,  shards: 120 }
+    1500: { money: 7500,  shards: 300,  item: NETHERITE_INGOT,   item-amount: 1 }
+    3000: { money: 15000, shards: 600,  item: NETHERITE_INGOT,   item-amount: 3 }
+    6000: { money: 30000, shards: 1200, item: TOTEM_OF_UNDYING,  item-amount: 2 }
+
+# ------------------------------------------------------------
+#  A scheduled, server-wide surprise reward. Everyone online when
+#  it fires gets the same randomised amount.
+# ------------------------------------------------------------
+bonus-events:
+  enabled: true
+  interval-minutes: 45
+  money-min: 100
+  money-max: 500
+  shards-min: 5
+  shards-max: 25
+
+# ------------------------------------------------------------
+#  Always-on personal stats panel on the side of the screen.
+# ------------------------------------------------------------
+sidebar:
+  enabled: true

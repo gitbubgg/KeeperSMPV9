@@ -79,6 +79,44 @@ public class Tablist implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) apply(player);
     }
 
+    /**
+     * (Re)creates the rank teams on an arbitrary board instead of the main
+     * one, e.g. a player's own sidebar scoreboard, so tab-list sorting still
+     * works for players who are not viewing the main scoreboard.
+     */
+    public void mirrorTeams(Scoreboard board) {
+        for (Rank rank : Rank.values()) {
+            String name = teamName(rank);
+            Team team = board.getTeam(name);
+            if (team == null) {
+                team = board.registerNewTeam(name);
+            }
+            team.prefix(Util.text(rank.display + " &r"));
+            team.setAllowFriendlyFire(true);
+            team.setCanSeeFriendlyInvisibles(false);
+        }
+    }
+
+    /** Assigns every online player to their rank team on the given board. */
+    public void mirrorMembership(Scoreboard board) {
+        mirrorTeams(board);
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            Rank rank = plugin.ranks().of(online);
+            Team target = board.getTeam(teamName(rank));
+            if (target == null) continue;
+            for (Rank other : Rank.values()) {
+                if (other == rank) continue;
+                Team team = board.getTeam(teamName(other));
+                if (team != null && team.hasEntry(online.getName())) {
+                    team.removeEntry(online.getName());
+                }
+            }
+            if (!target.hasEntry(online.getName())) {
+                target.addEntry(online.getName());
+            }
+        }
+    }
+
     /** Rank tag in front of chat messages. */
     @EventHandler(priority = EventPriority.LOW)
     public void onChat(AsyncChatEvent event) {

@@ -109,6 +109,10 @@ commands:
     description: Owner - add the invisible barrier ring to an existing spawn.
   keeper:
     description: Plugin admin. /keeper reload | /keeper stripe
+  daily:
+    description: Claim your daily login reward. Streaks give bigger rewards.
+  playtime:
+    description: Check your total playtime on the server.
 
 permissions:
   keeper.staff.mod:

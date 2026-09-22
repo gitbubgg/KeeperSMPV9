@@ -6,8 +6,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +40,15 @@ public class Data {
         public long lastRtp = 0L;
         public long lastBack = 0L;
         public String backLocation = null;
+
+        /** Runtime only, not persisted: when the current session started. */
+        public long sessionStart = 0L;
+        public long playtimeMillis = 0L;
+        public final Set<Integer> playtimeMilestones = new HashSet<>();
+
+        /** yyyy-MM-dd of the last /daily claim, or null if never claimed. */
+        public String lastDailyDate = null;
+        public int dailyStreak = 0;
 
         PlayerData(UUID uuid) {
             this.uuid = uuid;
@@ -92,6 +104,10 @@ public class Data {
         data.lastRtp = yml.getLong("last-rtp", 0L);
         data.lastBack = yml.getLong("last-back", 0L);
         data.backLocation = yml.getString("back");
+        data.playtimeMillis = yml.getLong("playtime-millis", 0L);
+        data.playtimeMilestones.addAll(yml.getIntegerList("playtime-milestones"));
+        data.lastDailyDate = yml.getString("daily.last-date");
+        data.dailyStreak = yml.getInt("daily.streak", 0);
 
         if (yml.isConfigurationSection("crate-limits")) {
             for (String key : yml.getConfigurationSection("crate-limits").getKeys(false)) {
@@ -124,6 +140,10 @@ public class Data {
         yml.set("last-rtp", data.lastRtp);
         yml.set("last-back", data.lastBack);
         yml.set("back", data.backLocation);
+        yml.set("playtime-millis", data.playtimeMillis);
+        yml.set("playtime-milestones", new ArrayList<>(data.playtimeMilestones));
+        yml.set("daily.last-date", data.lastDailyDate);
+        yml.set("daily.streak", data.dailyStreak);
         for (Map.Entry<String, String> e : data.homes.entrySet()) {
             yml.set("homes." + e.getKey(), e.getValue());
         }

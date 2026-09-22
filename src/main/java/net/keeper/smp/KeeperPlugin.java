@@ -13,9 +13,10 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-22 r9 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-22 r10 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
-            + "crate-spawnprotect-fix)";
+            + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
+            + "bonus-events, sidebar)";
 
 
     private Data data;
@@ -34,6 +35,10 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Protect protect;
     private Spawners spawners;
     private Tablist tablist;
+    private Playtime playtime;
+    private Daily daily;
+    private BonusEvents bonusEvents;
+    private Sidebar sidebar;
 
     @Override
     public void onEnable() {
@@ -60,6 +65,10 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         spawners = new Spawners(this);
         tablist = new Tablist(this);
         tablist.setupTeams();
+        playtime = new Playtime(this);
+        daily = new Daily(this);
+        bonusEvents = new BonusEvents(this);
+        sidebar = new Sidebar(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -68,7 +77,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 "settings", "rank", "balance", "pay", "grantrank", "eco", "fly", "gmc", "forcetp",
                 "afk", "shardshop", "spectator", "spawnstash", "setcrate", "delcrate", "givekey",
                 "usekey", "clearcrates",
-                "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper"
+                "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
+                "daily", "playtime"
         };
         for (String name : names) {
             if (getCommand(name) == null) {
@@ -91,6 +101,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(protect, this);
         Bukkit.getPluginManager().registerEvents(spawners, this);
         Bukkit.getPluginManager().registerEvents(tablist, this);
+        Bukkit.getPluginManager().registerEvents(playtime, this);
+        Bukkit.getPluginManager().registerEvents(sidebar, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -113,6 +125,14 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         int poll = Math.max(20, getConfig().getInt("stripe.poll-seconds", 60));
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> stripe.poll(),
                 200L, poll * 20L);
+        // playtime tracking and milestone payouts
+        Bukkit.getScheduler().runTaskTimer(this, () -> playtime.tick(), 1200L, 1200L);
+        // scheduled bonus events
+        int bonusInterval = Math.max(1, getConfig().getInt("bonus-events.interval-minutes", 45));
+        Bukkit.getScheduler().runTaskTimer(this, () -> bonusEvents.tick(),
+                bonusInterval * 1200L, bonusInterval * 1200L);
+        // personal sidebar
+        Bukkit.getScheduler().runTaskTimer(this, () -> sidebar.refresh(), 100L, 100L);
 
         getLogger().info("KeeperSMP enabled. Stripe: " + (stripe.enabled() ? "on" : "off"));
         getLogger().info("Build: " + BUILD);
@@ -120,6 +140,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if (playtime != null) playtime.tick();
         if (data != null) data.saveAll();
         if (auction != null) auction.save();
         if (stripe != null) stripe.saveState();
@@ -136,6 +157,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         econ.reload();
         crates.reload();
         shards.reload();
+        playtime.reload();
+        daily.reload();
     }
 
     /**
@@ -228,5 +251,21 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public Tablist tablist() {
         return tablist;
+    }
+
+    public Playtime playtime() {
+        return playtime;
+    }
+
+    public Daily daily() {
+        return daily;
+    }
+
+    public BonusEvents bonusEvents() {
+        return bonusEvents;
+    }
+
+    public Sidebar sidebar() {
+        return sidebar;
     }
 }
