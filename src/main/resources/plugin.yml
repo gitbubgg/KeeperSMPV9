@@ -109,6 +109,8 @@ commands:
     description: Owner - add the invisible barrier ring to an existing spawn.
   keeper:
     description: Plugin admin. /keeper reload | /keeper stripe
+  upgrade:
+    description: Upgrade the diamond armour or tool in your hand to netherite.
   daily:
     description: Claim your daily login reward. Streaks give bigger rewards.
   playtime:

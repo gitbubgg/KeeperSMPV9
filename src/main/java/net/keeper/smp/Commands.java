@@ -2,19 +2,39 @@ package net.keeper.smp;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class Commands implements CommandExecutor, TabCompleter {
+
+    /**
+     * Same pairing as the vanilla smithing table recipe. The template is not
+     * consumed there either, so this does not consume it.
+     */
+    private static final Map<Material, Material> NETHERITE_UPGRADES = Map.of(
+            Material.DIAMOND_HELMET, Material.NETHERITE_HELMET,
+            Material.DIAMOND_CHESTPLATE, Material.NETHERITE_CHESTPLATE,
+            Material.DIAMOND_LEGGINGS, Material.NETHERITE_LEGGINGS,
+            Material.DIAMOND_BOOTS, Material.NETHERITE_BOOTS,
+            Material.DIAMOND_SWORD, Material.NETHERITE_SWORD,
+            Material.DIAMOND_PICKAXE, Material.NETHERITE_PICKAXE,
+            Material.DIAMOND_AXE, Material.NETHERITE_AXE,
+            Material.DIAMOND_SHOVEL, Material.NETHERITE_SHOVEL,
+            Material.DIAMOND_HOE, Material.NETHERITE_HOE
+    );
 
     private final KeeperPlugin plugin;
 
@@ -103,6 +123,8 @@ public class Commands implements CommandExecutor, TabCompleter {
             }
 
             case "pay" -> pay(player, args);
+
+            case "upgrade" -> upgrade(player);
 
             case "daily" -> plugin.daily().claim(player);
             case "playtime" -> player.sendMessage(Util.text("&7Total playtime: &f"
@@ -323,6 +345,33 @@ public class Commands implements CommandExecutor, TabCompleter {
                 + " &ato &f" + target.getName() + "&a."));
         target.sendMessage(Util.text("&aReceived &f" + plugin.econ().fmt(amount)
                 + " &afrom &f" + player.getName() + "&a."));
+    }
+
+    /** Upgrades the diamond item in hand to netherite, same recipe as a smithing table. */
+    private void upgrade(Player player) {
+        ItemStack hand = player.getInventory().getItemInMainHand();
+        Material upgraded = NETHERITE_UPGRADES.get(hand.getType());
+        if (upgraded == null) {
+            player.sendMessage(Util.text("&cHold a diamond armour piece or tool to upgrade it."));
+            return;
+        }
+        if (!player.getInventory().containsAtLeast(
+                new ItemStack(Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE), 1)) {
+            player.sendMessage(Util.text("&cYou need a &fNetherite Upgrade Smithing Template&c."));
+            player.sendMessage(Util.text("&7It is not used up, just needed in your inventory."));
+            return;
+        }
+        if (!player.getInventory().containsAtLeast(new ItemStack(Material.NETHERITE_INGOT), 1)) {
+            player.sendMessage(Util.text("&cYou need a &fNetherite Ingot &cto upgrade it."));
+            return;
+        }
+        player.getInventory().removeItem(new ItemStack(Material.NETHERITE_INGOT, 1));
+
+        ItemStack result = hand.clone();
+        result.setType(upgraded);
+        player.getInventory().setItemInMainHand(result);
+        player.sendMessage(Util.text("&aUpgraded to &f" + Util.nice(upgraded) + "&a."));
+        player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1f, 1.2f);
     }
 
     private void auction(Player player, String[] args) {

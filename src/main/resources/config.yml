@@ -177,6 +177,7 @@ ranks:
 #  half: true adds a half-bundle button at half the price.
 # ------------------------------------------------------------
 shop:
+  ELYTRA: { price: 50000000, unit: 1 }
   TOTEM_OF_UNDYING: { price: 1500, unit: 1 }
   END_STONE: { price: 64,   unit: 64 }
   NETHERRACK: { price: 64,   unit: 64 }
@@ -331,6 +332,7 @@ sell:
   SALMON: 0.7
   COOKED_SALMON: 1.5
   # high value goods
+  ELYTRA: 35000000.0
   TOTEM_OF_UNDYING: 900.0
   GOLDEN_APPLE: 14.0
   ENCHANTED_GOLDEN_APPLE: 600.0
