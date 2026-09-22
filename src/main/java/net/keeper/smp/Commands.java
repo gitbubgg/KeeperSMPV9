@@ -507,17 +507,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");
                 case "spawnfence" -> out.add("full");
-                case "usekey" -> plugin.crates().useNearest(player, 6);
-
-            case "clearcrates" -> {
-                if (!rank.isStaff()) return deny(sender, Rank.MOD);
-                int cleared = plugin.crates().clearAll();
-                player.sendMessage(Util.text("&aCleared &f" + cleared
-                        + " &aregistered crate(s)."));
-                player.sendMessage(Util.text("&7Re-register the ones you want with &f/setcrate&7."));
-            }
-
-            case "setcrate" -> {
+                case "setcrate" -> {
                     out.addAll(plugin.crates().tiers().keySet());
                     out.add("ANY");
                 }
