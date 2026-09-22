@@ -131,6 +131,12 @@ public class Gui implements Listener {
             double sellBack = plugin.econ().basePrice(entry.material());
             if (sellBack > 0) lore.add("&8Sells back for " + plugin.econ().fmt(sellBack) + " each");
 
+            int stockLeft = plugin.econ().stockRemaining(entry.material());
+            if (stockLeft >= 0) {
+                lore.add("");
+                lore.add(stockLeft > 0 ? "&6" + stockLeft + " left in stock" : "&cSold out");
+            }
+
             ItemStack display = Util.item(entry.material(), Math.min(entry.unit(), 64),
                     "&f" + Util.nice(entry.material()), lore.toArray(new String[0]));
             inv.setItem(i, Util.tag(display, "shopitem", entry.material().name()));

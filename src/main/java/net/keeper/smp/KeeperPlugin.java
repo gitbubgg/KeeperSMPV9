@@ -13,10 +13,11 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-22 r11 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-22 r12 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
-            + "bonus-events, sidebar, netherite-upgrade, elytra-shop)";
+            + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
+            + "elytra-stock, end-loot-strip)";
 
 
     private Data data;
@@ -39,6 +40,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Daily daily;
     private BonusEvents bonusEvents;
     private Sidebar sidebar;
+    private EndLoot endLoot;
 
     @Override
     public void onEnable() {
@@ -69,6 +71,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         daily = new Daily(this);
         bonusEvents = new BonusEvents(this);
         sidebar = new Sidebar(this);
+        endLoot = new EndLoot(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -103,6 +106,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(tablist, this);
         Bukkit.getPluginManager().registerEvents(playtime, this);
         Bukkit.getPluginManager().registerEvents(sidebar, this);
+        Bukkit.getPluginManager().registerEvents(endLoot, this);
+        endLoot.sweepLoadedChunks();
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -267,5 +272,9 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public Sidebar sidebar() {
         return sidebar;
+    }
+
+    public EndLoot endLoot() {
+        return endLoot;
     }
 }

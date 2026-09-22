@@ -2,31 +2,62 @@ package net.keeper.smp;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class Econ implements Listener {
 
-    public record ShopEntry(Material material, double price, int unit, boolean half) {
+    /** stock of -1 means unlimited. */
+    public record ShopEntry(Material material, double price, int unit, boolean half, int stock) {
         public double unitPrice() {
             return price / Math.max(1, unit);
         }
     }
 
     private final KeeperPlugin plugin;
+    private final File stockFile;
     private final Map<Material, ShopEntry> shop = new LinkedHashMap<>();
     private final Map<Material, Double> sell = new LinkedHashMap<>();
+    /** Remaining stock for shop entries with a limited quantity, persisted across restarts. */
+    private final Map<Material, Integer> stockRemaining = new LinkedHashMap<>();
 
     public Econ(KeeperPlugin plugin) {
         this.plugin = plugin;
+        this.stockFile = new File(plugin.getDataFolder(), "shop-stock.yml");
+        loadStock();
         reload();
+    }
+
+    private void loadStock() {
+        stockRemaining.clear();
+        if (!stockFile.exists()) return;
+        YamlConfiguration yml = YamlConfiguration.loadConfiguration(stockFile);
+        for (String key : yml.getKeys(false)) {
+            Material material = Material.matchMaterial(key);
+            if (material != null) stockRemaining.put(material, yml.getInt(key));
+        }
+    }
+
+    private void saveStock() {
+        YamlConfiguration yml = new YamlConfiguration();
+        for (Map.Entry<Material, Integer> e : stockRemaining.entrySet()) {
+            yml.set(e.getKey().name(), e.getValue());
+        }
+        try {
+            yml.save(stockFile);
+        } catch (IOException ex) {
+            plugin.getLogger().warning("Failed saving shop stock: " + ex.getMessage());
+        }
     }
 
     public void reload() {
@@ -44,7 +75,14 @@ public class Econ implements Listener {
                 double price = shopSection.getDouble(key + ".price", 0);
                 int unit = Math.max(1, shopSection.getInt(key + ".unit", 1));
                 boolean half = shopSection.getBoolean(key + ".half", false);
-                shop.put(material, new ShopEntry(material, price, unit, half));
+                int stock = shopSection.getInt(key + ".stock", -1);
+                shop.put(material, new ShopEntry(material, price, unit, half, stock));
+                // First time this item has ever had a stock limit: start it full.
+                // A later reload never refills it, only a fresh, never-tracked item does.
+                if (stock >= 0 && !stockRemaining.containsKey(material)) {
+                    stockRemaining.put(material, stock);
+                    saveStock();
+                }
             }
         }
 
@@ -68,6 +106,11 @@ public class Econ implements Listener {
 
     public ShopEntry shopEntry(Material material) {
         return shop.get(material);
+    }
+
+    /** -1 for an item with no stock limit. */
+    public int stockRemaining(Material material) {
+        return stockRemaining.getOrDefault(material, -1);
     }
 
     /** Base sell price for one unit, before rank bonus and durability. */
@@ -124,6 +167,17 @@ public class Econ implements Listener {
             player.sendMessage(Util.text("&cThat item is not for sale."));
             return false;
         }
+        if (entry.stock() >= 0) {
+            int stockLeft = stockRemaining.getOrDefault(material, 0);
+            if (stockLeft <= 0) {
+                player.sendMessage(Util.text("&cThat item is sold out."));
+                return false;
+            }
+            if (count > stockLeft) {
+                player.sendMessage(Util.text("&cOnly &f" + stockLeft + " &cleft in stock."));
+                return false;
+            }
+        }
         double cost = buyCost(player, entry, count);
         if (!withdraw(player.getUniqueId(), cost)) {
             player.sendMessage(Util.text("&cYou need &f" + fmt(cost) + "&c and you have &f"
@@ -139,8 +193,16 @@ public class Econ implements Listener {
             }
             remaining -= give;
         }
+        if (entry.stock() >= 0) {
+            stockRemaining.merge(material, -count, Integer::sum);
+            saveStock();
+        }
         player.sendMessage(Util.text("&aBought &f" + count + "x " + Util.nice(material)
                 + " &afor &f" + fmt(cost) + "&a."));
+        if (entry.stock() >= 0) {
+            player.sendMessage(Util.text("&8" + stockRemaining.getOrDefault(material, 0)
+                    + " left in stock."));
+        }
         return true;
     }
 

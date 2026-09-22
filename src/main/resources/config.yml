@@ -177,7 +177,7 @@ ranks:
 #  half: true adds a half-bundle button at half the price.
 # ------------------------------------------------------------
 shop:
-  ELYTRA: { price: 50000000, unit: 1 }
+  ELYTRA: { price: 500000000, unit: 1, stock: 50 }
   TOTEM_OF_UNDYING: { price: 1500, unit: 1 }
   END_STONE: { price: 64,   unit: 64 }
   NETHERRACK: { price: 64,   unit: 64 }
@@ -638,3 +638,10 @@ bonus-events:
 # ------------------------------------------------------------
 sidebar:
   enabled: true
+
+# ------------------------------------------------------------
+#  Elytra is a limited, priced /shop item now, so strip the free
+#  ones vanilla places in End City ships as chunks load.
+# ------------------------------------------------------------
+end-loot:
+  remove-elytra: true
