@@ -13,8 +13,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-22 r7 (barriers, protect, tier-crates, "
-            + "daily-caps, tnt-spawner, lobby, value, rank-tags)";
+    public static final String BUILD = "2026-09-22 r8 (barriers, protect, tier-crates, "
+            + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags)";
 
 
     private Data data;

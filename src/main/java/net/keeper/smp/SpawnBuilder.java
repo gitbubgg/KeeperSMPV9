@@ -7,10 +7,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.Leaves;
-import org.bukkit.block.sign.Side;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -317,28 +317,24 @@ public class SpawnBuilder {
             }
             plugin.crates().registerCrate(crate, tier);
 
-            // Sign on top saying which key this one takes.
-            Block signBlock = world.getBlockAt(x, cy + 2, z);
-            signBlock.setType(Material.OAK_SIGN, false);
-            if (signBlock.getBlockData() instanceof Rotatable rotatable) {
-                rotatable.setRotation(facing);
-                signBlock.setBlockData(rotatable, false);
-            }
-            if (signBlock.getState() instanceof org.bukkit.block.Sign sign) {
-                String colour = switch (tier) {
-                    case "RARE" -> "&b";
-                    case "EPIC" -> "&5";
-                    case "LEGENDARY" -> "&6";
-                    default -> "&7";
-                };
-                sign.getSide(Side.FRONT).line(0, Util.text("&8[ Crate ]"));
-                sign.getSide(Side.FRONT).line(1, Util.text(colour + "&l" + tier));
-                sign.getSide(Side.FRONT).line(2, Util.text("&0Right click"));
-                sign.getSide(Side.FRONT).line(3, Util.text("&0with " + tier + " key"));
-                sign.getSide(Side.BACK).line(1, Util.text(colour + "&l" + tier));
-                sign.getSide(Side.BACK).line(2, Util.text("&0Crate"));
-                sign.update(true, false);
-            }
+            // Floating name-tag style label over the crate, saying which key it takes.
+            String colour = switch (tier) {
+                case "RARE" -> "&b";
+                case "EPIC" -> "&5";
+                case "LEGENDARY" -> "&6";
+                default -> "&7";
+            };
+            Location labelLoc = new Location(world, x + 0.5, cy + 2.3, z + 0.5);
+            world.spawn(labelLoc, TextDisplay.class, display -> {
+                display.text(Util.text("&8[ Crate ]\n" + colour + "&l" + tier
+                        + "\n&7Right click with " + tier + " key"));
+                display.setBillboard(Display.Billboard.CENTER);
+                display.setAlignment(TextDisplay.TextAlignment.CENTER);
+                display.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
+                display.setShadowed(true);
+                display.setSeeThrough(false);
+                display.setPersistent(true);
+            });
         }
         plugin.getLogger().info("Registered 4 spawn crates, one per tier.");
     }
