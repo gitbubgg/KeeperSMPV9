@@ -65,6 +65,57 @@ jobs:
             -o UserKnownHostsFile=/dev/null \
             -P "$port" \
             "${user}@${host}"
+      - name: Disable vanilla spawn protection
+        env:
+          FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
+          FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
+          FALIX_SFTP_USER: ${{ secrets.FALIX_SFTP_USER }}
+          FALIX_SFTP_PASSWORD: ${{ secrets.FALIX_SFTP_PASSWORD }}
+        run: |
+          # Vanilla's own spawn-protection setting blocks non-op players (and
+          # Bedrock/Floodgate players, who are never op) from interacting with
+          # blocks near spawn entirely, before KeeperSMP's own Protect system
+          # or Crates' click handler ever sees the event. KeeperSMP already
+          # protects spawn itself, so turn the redundant vanilla one off.
+          # Runs every deploy so a panel reset can't silently bring it back.
+          raw="${FALIX_SFTP_HOST#sftp://}"
+          raw="${raw%%/*}"
+          if [[ "$raw" == *"@"* ]]; then
+            embedded_user="${raw%%@*}"
+            raw="${raw#*@}"
+          else
+            embedded_user=""
+          fi
+          host="${raw%%:*}"
+          if [[ "$raw" == *":"* ]]; then
+            embedded_port="${raw#*:}"
+          else
+            embedded_port=""
+          fi
+          user="${FALIX_SFTP_USER:-$embedded_user}"
+          port="${FALIX_SFTP_PORT:-${embedded_port:-22}}"
+
+          export SSHPASS="$FALIX_SFTP_PASSWORD"
+          echo "get server.properties server.properties" | sshpass -e sftp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -P "$port" \
+            "${user}@${host}"
+
+          if [ -f server.properties ]; then
+            if grep -q '^spawn-protection=' server.properties; then
+              sed -i 's/^spawn-protection=.*/spawn-protection=0/' server.properties
+            else
+              echo 'spawn-protection=0' >> server.properties
+            fi
+            echo "put server.properties server.properties" | sshpass -e sftp \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -P "$port" \
+              "${user}@${host}"
+          else
+            echo "::warning::Could not download server.properties over SFTP; spawn-protection was left unchanged."
+          fi
       - name: Restart server so the new jar loads
         env:
           FALIX_PANEL_URL: ${{ secrets.FALIX_PANEL_URL }}
