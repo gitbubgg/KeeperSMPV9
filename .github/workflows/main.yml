@@ -158,31 +158,7 @@ jobs:
 
           if [ -f server-config.yml ]; then
             pip install --quiet ruamel.yaml
-            python3 - <<'PYEOF'
-from ruamel.yaml import YAML
-
-yaml = YAML()
-yaml.preserve_quotes = True
-
-with open('server-config.yml') as f:
-    live = yaml.load(f) or {}
-with open('src/main/resources/config.yml') as f:
-    default = yaml.load(f) or {}
-
-def merge(default_node, live_node):
-    if not hasattr(default_node, 'items'):
-        return
-    for key, value in default_node.items():
-        if key not in live_node:
-            live_node[key] = value
-        elif hasattr(value, 'items') and hasattr(live_node.get(key), 'items'):
-            merge(value, live_node[key])
-
-merge(default, live)
-
-with open('server-config.yml', 'w') as f:
-    yaml.dump(live, f)
-PYEOF
+            python3 .github/scripts/merge_config.py
             echo "put server-config.yml plugins/KeeperSMP/config.yml" | sshpass -e sftp \
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
