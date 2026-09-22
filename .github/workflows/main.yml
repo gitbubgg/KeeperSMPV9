@@ -28,19 +28,17 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: KeeperSMP-jar
-      - name: Upload jar to FalixNodes
+      - name: Upload jar to FalixNodes over SFTP
         env:
-          FALIX_PANEL_URL: ${{ secrets.FALIX_PANEL_URL }}
-          FALIX_SERVER_ID: ${{ secrets.FALIX_SERVER_ID }}
-          FALIX_API_KEY: ${{ secrets.FALIX_API_KEY }}
+          FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
+          FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
+          FALIX_SFTP_USER: ${{ secrets.FALIX_SFTP_USER }}
+          FALIX_SFTP_PASSWORD: ${{ secrets.FALIX_SFTP_PASSWORD }}
         run: |
-          curl -sS --fail-with-body -X POST \
-            "${FALIX_PANEL_URL%/}/api/client/servers/${FALIX_SERVER_ID}/files/write?file=%2Fplugins%2FKeeperSMP.jar" \
-            -H "Authorization: Bearer ${FALIX_API_KEY}" \
-            -H "Content-Type: application/octet-stream" \
-            -H "Accept: application/json" \
-            -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) KeeperSMP-Deploy" \
-            --data-binary @KeeperSMP.jar
+          curl -sS --insecure \
+            -u "${FALIX_SFTP_USER}:${FALIX_SFTP_PASSWORD}" \
+            -T KeeperSMP.jar \
+            "sftp://${FALIX_SFTP_HOST}:${FALIX_SFTP_PORT}/plugins/KeeperSMP.jar"
       - name: Restart server so the new jar loads
         env:
           FALIX_PANEL_URL: ${{ secrets.FALIX_PANEL_URL }}
@@ -53,4 +51,5 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
             -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) KeeperSMP-Deploy" \
-            -d '{"signal":"restart"}'
+            -d '{"signal":"restart"}' \
+          || echo "::warning::Could not trigger an automatic restart (the FalixNodes panel API may be blocking scripted requests). The new jar is uploaded, but you'll need to restart the server manually from the panel to load it."
