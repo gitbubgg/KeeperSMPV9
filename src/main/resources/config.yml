@@ -1,0 +1,592 @@
+# ============================================================
+#  KeeperSMP configuration
+# ============================================================
+
+general:
+  currency-symbol: '$'
+  starting-balance: 500.0
+  # Worlds /rtp and /rtpq are allowed to drop you into.
+  rtp-worlds: [world]
+  rtp-radius: 5000
+  rtp-min-radius: 250
+  combat-tag-seconds: 20
+  # Kill hostile mobs that wander into chunks where everyone nearby has
+  # mob spawning switched off.
+  mob-cull-enabled: true
+  mob-cull-radius: 64
+
+stripe:
+  enabled: false
+  # RESTRICTED key only (rk_live_... or rk_test_...), with READ access to
+  # Checkout Sessions and Subscriptions. Nothing else. Never put a secret
+  # key (sk_...) here.
+  secret-key: 'PASTE_YOUR_RESTRICTED_KEY_HERE'
+  poll-seconds: 60
+  # Minutes a /rank checkout code stays valid.
+  code-ttl-minutes: 30
+  links:
+    KEEPER_PLUS: 'https://buy.stripe.com/bJefZj9ks99h9Gq6JK73G00'
+    KEEPER_PLUS2: 'https://buy.stripe.com/4gM7sN54cetBbOyb0073G01'
+    KEEPER_PLUS3: 'https://buy.stripe.com/4gM8wR68g4T16ueb0073G02'
+  # Cents, used to work out which tier a completed checkout paid for.
+  amounts:
+    KEEPER_PLUS: 350
+    KEEPER_PLUS2: 650
+    KEEPER_PLUS3: 1100
+
+# Usernames are matched case-insensitively. Bedrock accounts arrive through
+# Floodgate with the prefix configured in Floodgate's config (default '.'),
+# and spaces in a gamertag become underscores, so both spellings are listed.
+staff:
+  owner:
+    - 'Ytismyfav'
+    - '.HappyVids3312'
+  admin: []
+  mod:
+    - '.Fitz fun5811'
+    - '.Fitz_fun5811'
+    - '.SloppyStar3815'
+
+# Set any of these to false to switch the perk off server-wide.
+# sell-bonus and shop-discount are the two perks most likely to be read as
+# selling gameplay advantage under Mojang's commercial guidelines.
+perks:
+  sell-bonus: true
+  shop-discount: true
+  auction-tax: true
+  priority-join: true
+  nickname-colour: true
+
+ranks:
+  KEEPER:
+    display: '&7Keeper'
+    homes: 3
+    listings: 20
+    autosell: false
+    sell-bonus: 0.0
+    shop-discount: 0.0
+    auction-tax: 0.05
+    listing-hours: 24
+    tp-warmup: 5
+    rtp-cooldown: 300
+    back: none
+    enderchest: false
+    craftingtable: false
+    nickname: false
+    priority: false
+  KEEPER_PLUS:
+    display: '&aKeeper&f+'
+    homes: 10
+    listings: 35
+    autosell: true
+    sell-bonus: 0.05
+    shop-discount: 0.03
+    auction-tax: 0.03
+    listing-hours: 48
+    tp-warmup: 3
+    rtp-cooldown: 120
+    back: limited
+    back-cooldown: 600
+    enderchest: false
+    craftingtable: false
+    nickname: true
+    priority: false
+  KEEPER_PLUS2:
+    display: '&bKeeper&f++'
+    homes: 30
+    listings: 50
+    autosell: true
+    sell-bonus: 0.10
+    shop-discount: 0.06
+    auction-tax: 0.02
+    listing-hours: 72
+    tp-warmup: 1
+    rtp-cooldown: 60
+    back: unlimited
+    enderchest: true
+    craftingtable: true
+    nickname: true
+    priority: true
+  KEEPER_PLUS3:
+    display: '&dKeeper&f+++'
+    homes: 60
+    listings: 75
+    autosell: true
+    sell-bonus: 0.15
+    shop-discount: 0.10
+    auction-tax: 0.01
+    listing-hours: 168
+    tp-warmup: 0
+    rtp-cooldown: 30
+    back: unlimited
+    enderchest: true
+    craftingtable: true
+    nickname: true
+    priority: true
+  MOD:
+    display: '&2Mod'
+    homes: 60
+    listings: 75
+    autosell: true
+    sell-bonus: 0.0
+    shop-discount: 0.0
+    auction-tax: 0.0
+    listing-hours: 168
+    tp-warmup: 0
+    rtp-cooldown: 0
+    back: unlimited
+    enderchest: true
+    craftingtable: true
+    nickname: true
+    priority: true
+  ADMIN:
+    display: '&cAdmin'
+    homes: 100
+    listings: 100
+    autosell: true
+    sell-bonus: 0.0
+    shop-discount: 0.0
+    auction-tax: 0.0
+    listing-hours: 168
+    tp-warmup: 0
+    rtp-cooldown: 0
+    back: unlimited
+    enderchest: true
+    craftingtable: true
+    nickname: true
+    priority: true
+  OWNER:
+    display: '&4Owner'
+    homes: 200
+    listings: 200
+    autosell: true
+    sell-bonus: 0.0
+    shop-discount: 0.0
+    auction-tax: 0.0
+    listing-hours: 168
+    tp-warmup: 0
+    rtp-cooldown: 0
+    back: unlimited
+    enderchest: true
+    craftingtable: true
+    nickname: true
+    priority: true
+
+# ------------------------------------------------------------
+#  /shop  -  price is for the whole bundle of 'unit' items.
+#  half: true adds a half-bundle button at half the price.
+# ------------------------------------------------------------
+shop:
+  TOTEM_OF_UNDYING: { price: 1500, unit: 1 }
+  END_STONE: { price: 64,   unit: 64 }
+  NETHERRACK: { price: 64,   unit: 64 }
+  IRON_BOOTS: { price: 50,   unit: 1 }
+  IRON_LEGGINGS: { price: 70,   unit: 1 }
+  IRON_CHESTPLATE: { price: 100,  unit: 1 }
+  IRON_HELMET: { price: 60,   unit: 1 }
+  DIAMOND_BOOTS: { price: 200,  unit: 1 }
+  DIAMOND_LEGGINGS: { price: 280,  unit: 1 }
+  DIAMOND_CHESTPLATE: { price: 400,  unit: 1 }
+  DIAMOND_HELMET: { price: 240,  unit: 1 }
+  NETHERITE_SCRAP: { price: 500,  unit: 1 }
+  NETHERITE_INGOT: { price: 2250, unit: 1 }
+  NETHERITE_UPGRADE_SMITHING_TEMPLATE: { price: 450, unit: 1 }
+  GOLDEN_APPLE: { price: 1500, unit: 64, half: true }
+  ENCHANTED_GOLDEN_APPLE: { price: 1000, unit: 1 }
+  END_CRYSTAL: { price: 2500, unit: 64 }
+  OBSIDIAN: { price: 500,  unit: 64 }
+  RESPAWN_ANCHOR: { price: 3000, unit: 64 }
+  GLOWSTONE: { price: 100,  unit: 64 }
+  DIAMOND_AXE: { price: 250,  unit: 1 }
+  DIAMOND_SWORD: { price: 300,  unit: 1 }
+  DIAMOND_PICKAXE: { price: 350,  unit: 1 }
+  IRON_AXE: { price: 65,   unit: 1 }
+  IRON_SWORD: { price: 75,   unit: 1 }
+  IRON_PICKAXE: { price: 95,   unit: 1 }
+
+# ------------------------------------------------------------
+#  /sell  -  price per single item. Always below the /shop rate.
+#  Smelted or refined forms are worth more than the raw drop.
+#  Planks sit at a quarter of a log, so 1 log == 4 planks.
+# ------------------------------------------------------------
+sell:
+  # ores and refined metals
+  RAW_IRON: 3.0
+  IRON_INGOT: 5.0
+  IRON_BLOCK: 45.0
+  IRON_NUGGET: 0.55
+  RAW_GOLD: 5.0
+  GOLD_INGOT: 8.0
+  GOLD_BLOCK: 72.0
+  GOLD_NUGGET: 0.88
+  RAW_COPPER: 1.5
+  COPPER_INGOT: 2.5
+  DIAMOND: 22.0
+  DIAMOND_BLOCK: 198.0
+  EMERALD: 14.0
+  EMERALD_BLOCK: 126.0
+  COAL: 2.0
+  CHARCOAL: 2.0
+  COAL_BLOCK: 18.0
+  LAPIS_LAZULI: 4.0
+  REDSTONE: 1.2
+  QUARTZ: 2.0
+  AMETHYST_SHARD: 2.5
+  ANCIENT_DEBRIS: 320.0
+  NETHERITE_SCRAP: 350.0
+  NETHERITE_INGOT: 1500.0
+  # raw ore blocks, worth less than what you smelt out of them
+  IRON_ORE: 2.5
+  DEEPSLATE_IRON_ORE: 2.5
+  GOLD_ORE: 4.0
+  DEEPSLATE_GOLD_ORE: 4.0
+  COPPER_ORE: 1.2
+  DEEPSLATE_COPPER_ORE: 1.2
+  DIAMOND_ORE: 20.0
+  DEEPSLATE_DIAMOND_ORE: 20.0
+  COAL_ORE: 1.6
+  DEEPSLATE_COAL_ORE: 1.6
+  NETHER_GOLD_ORE: 2.0
+  NETHER_QUARTZ_ORE: 1.6
+  # logs at 2.0, planks at 0.5
+  OAK_LOG: 2.0
+  OAK_PLANKS: 0.5
+  SPRUCE_LOG: 2.0
+  SPRUCE_PLANKS: 0.5
+  BIRCH_LOG: 2.0
+  BIRCH_PLANKS: 0.5
+  JUNGLE_LOG: 2.0
+  JUNGLE_PLANKS: 0.5
+  ACACIA_LOG: 2.0
+  ACACIA_PLANKS: 0.5
+  DARK_OAK_LOG: 2.0
+  DARK_OAK_PLANKS: 0.5
+  MANGROVE_LOG: 2.0
+  MANGROVE_PLANKS: 0.5
+  CHERRY_LOG: 2.4
+  CHERRY_PLANKS: 0.6
+  CRIMSON_STEM: 2.4
+  CRIMSON_PLANKS: 0.6
+  WARPED_STEM: 2.4
+  WARPED_PLANKS: 0.6
+  BAMBOO_BLOCK: 1.6
+  BAMBOO_PLANKS: 0.4
+  # stone and bulk blocks
+  COBBLESTONE: 0.1
+  STONE: 0.2
+  COBBLED_DEEPSLATE: 0.12
+  DEEPSLATE: 0.22
+  ANDESITE: 0.12
+  DIORITE: 0.12
+  GRANITE: 0.12
+  TUFF: 0.12
+  CALCITE: 0.2
+  BLACKSTONE: 0.3
+  BASALT: 0.3
+  NETHERRACK: 0.35
+  END_STONE: 0.5
+  OBSIDIAN: 5.0
+  CRYING_OBSIDIAN: 9.0
+  GLOWSTONE: 1.0
+  GLOWSTONE_DUST: 0.25
+  SAND: 0.1
+  GRAVEL: 0.1
+  CLAY_BALL: 0.3
+  DIRT: 0.05
+  # mob drops and farm goods
+  ROTTEN_FLESH: 0.2
+  BONE: 0.4
+  BONE_MEAL: 0.13
+  STRING: 0.5
+  SPIDER_EYE: 0.6
+  GUNPOWDER: 1.5
+  ENDER_PEARL: 6.0
+  BLAZE_ROD: 7.0
+  GHAST_TEAR: 12.0
+  SLIME_BALL: 1.5
+  LEATHER: 1.0
+  FEATHER: 0.4
+  WHEAT: 0.5
+  BREAD: 1.6
+  CARROT: 0.4
+  POTATO: 0.4
+  BAKED_POTATO: 0.8
+  BEETROOT: 0.4
+  MELON_SLICE: 0.25
+  PUMPKIN: 0.6
+  SUGAR_CANE: 0.3
+  NETHER_WART: 0.8
+  COCOA_BEANS: 0.5
+  EGG: 0.3
+  BEEF: 0.7
+  COOKED_BEEF: 1.6
+  PORKCHOP: 0.7
+  COOKED_PORKCHOP: 1.6
+  CHICKEN: 0.6
+  COOKED_CHICKEN: 1.3
+  MUTTON: 0.6
+  COOKED_MUTTON: 1.3
+  COD: 0.6
+  COOKED_COD: 1.3
+  SALMON: 0.7
+  COOKED_SALMON: 1.5
+  # high value goods
+  TOTEM_OF_UNDYING: 900.0
+  GOLDEN_APPLE: 14.0
+  ENCHANTED_GOLDEN_APPLE: 600.0
+  END_CRYSTAL: 23.0
+  RESPAWN_ANCHOR: 28.0
+  NETHERITE_UPGRADE_SMITHING_TEMPLATE: 270.0
+  # gear, paid at the listed rate scaled by remaining durability
+  IRON_HELMET: 36.0
+  IRON_CHESTPLATE: 60.0
+  IRON_LEGGINGS: 42.0
+  IRON_BOOTS: 30.0
+  IRON_SWORD: 45.0
+  IRON_AXE: 39.0
+  IRON_PICKAXE: 57.0
+  DIAMOND_HELMET: 144.0
+  DIAMOND_CHESTPLATE: 240.0
+  DIAMOND_LEGGINGS: 168.0
+  DIAMOND_BOOTS: 120.0
+  DIAMOND_SWORD: 180.0
+  DIAMOND_AXE: 150.0
+  DIAMOND_PICKAXE: 210.0
+
+# ------------------------------------------------------------
+#  /afk  -  shards are earned only by idling
+# ------------------------------------------------------------
+afk:
+  shards-per-minute: 1
+
+# ------------------------------------------------------------
+#  /shardshop  -  public, paid for in shards
+#  kind: item | spawner | key
+#  payload: a material name, an entity type, or a crate tier
+# ------------------------------------------------------------
+shardshop:
+  SKELETON_SPAWNER:
+    icon: SPAWNER
+    name: '&fSkeleton Spawner'
+    price: 7500
+    kind: spawner
+    payload: SKELETON
+    lore:
+      - '&7Place it down and it works like a'
+      - '&7natural skeleton spawner.'
+  TNT_SPAWNER:
+    icon: TNT
+    name: '&cTNT Spawner'
+    price: 10000
+    kind: tntspawner
+    payload: TNT
+    lore:
+      - '&7Spawns primed TNT. It will damage'
+      - '&7whatever is around it, including you.'
+      - '&cPlace it somewhere you do not mind losing.'
+  NETHERITE_HELMET:
+    icon: NETHERITE_HELMET
+    name: '&5Netherite Helmet'
+    price: 6000
+    kind: item
+    payload: NETHERITE_HELMET
+    lore: ['&7Unenchanted.']
+  NETHERITE_CHESTPLATE:
+    icon: NETHERITE_CHESTPLATE
+    name: '&5Netherite Chestplate'
+    price: 9000
+    kind: item
+    payload: NETHERITE_CHESTPLATE
+    lore: ['&7Unenchanted.']
+  NETHERITE_LEGGINGS:
+    icon: NETHERITE_LEGGINGS
+    name: '&5Netherite Leggings'
+    price: 8000
+    kind: item
+    payload: NETHERITE_LEGGINGS
+    lore: ['&7Unenchanted.']
+  NETHERITE_BOOTS:
+    icon: NETHERITE_BOOTS
+    name: '&5Netherite Boots'
+    price: 6000
+    kind: item
+    payload: NETHERITE_BOOTS
+    lore: ['&7Unenchanted.']
+  COMMON_KEY:
+    icon: TRIAL_KEY
+    name: '&7Common Key'
+    price: 500
+    kind: key
+    payload: COMMON
+    lore: ['&7Opens any crate. 3 rolls.']
+  RARE_KEY:
+    icon: TRIAL_KEY
+    name: '&bRare Key'
+    price: 1500
+    kind: key
+    payload: RARE
+    lore: ['&7Better odds and more rolls.']
+  EPIC_KEY:
+    icon: OMINOUS_TRIAL_KEY
+    name: '&5Epic Key'
+    price: 4000
+    kind: key
+    payload: EPIC
+    lore: ['&7Enchanted gear and big payouts.']
+  LEGENDARY_KEY:
+    icon: OMINOUS_TRIAL_KEY
+    name: '&6Legendary Key'
+    price: 9000
+    kind: key
+    payload: LEGENDARY
+    lore:
+      - '&7The best table in the game.'
+      - '&8Announced to the whole server when opened.'
+
+# ------------------------------------------------------------
+#  Crates  -  the KEY decides the loot, not the crate block.
+#  Staff mark a block as a crate with /setcrate.
+#  weight is relative within a tier. money and shards can be
+#  used instead of an item.
+# ------------------------------------------------------------
+crates:
+  # Logs every crate interaction to the console. Turn on only while working
+  # out why a client's clicks are not registering.
+  debug: false
+  COMMON:
+    name: '&7Common Key'
+    # Trial keys cannot be placed as blocks, which matters: a placeable key
+    # gets consumed by a misclick or blocked by spawn protection.
+    key-item: TRIAL_KEY
+    rolls: 3
+    daily-limits:
+      sword: 2
+      chestplate: 2
+      helmet: 2
+      leggings: 2
+      boots: 2
+      pickaxe: 2
+      axe: 2
+    loot:
+      - { item: IRON_INGOT, min: 8, max: 24, weight: 26 }
+      - { item: GOLD_INGOT, min: 4, max: 12, weight: 18 }
+      - { item: COAL, min: 16, max: 32, weight: 16 }
+      - { item: DIAMOND, min: 1, max: 3, weight: 10 }
+      - { item: GOLDEN_APPLE, min: 1, max: 2, weight: 8 }
+      - { item: IRON_HELMET, min: 1, max: 1, weight: 4 }
+      - { item: IRON_CHESTPLATE, min: 1, max: 1, weight: 4 }
+      - { item: IRON_LEGGINGS, min: 1, max: 1, weight: 4 }
+      - { item: IRON_BOOTS, min: 1, max: 1, weight: 4 }
+      - { item: IRON_SWORD, min: 1, max: 1, weight: 4 }
+      - { item: IRON_PICKAXE, min: 1, max: 1, weight: 4 }
+      - { money: 250, weight: 10 }
+      - { shards: 100, weight: 2 }
+  RARE:
+    name: '&bRare Key'
+    key-item: TRIAL_KEY
+    rolls: 4
+    daily-limits:
+      sword: 2
+      chestplate: 2
+      helmet: 2
+      leggings: 2
+      boots: 2
+      pickaxe: 2
+      axe: 2
+    loot:
+      - { item: DIAMOND, min: 4, max: 10, weight: 20 }
+      - { item: IRON_BLOCK, min: 2, max: 5, weight: 12 }
+      - { item: GOLDEN_APPLE, min: 4, max: 8, weight: 12 }
+      - { item: ENDER_PEARL, min: 4, max: 8, weight: 10 }
+      - { item: OBSIDIAN, min: 8, max: 20, weight: 8 }
+      - { item: DIAMOND_HELMET, min: 1, max: 1, weight: 6, enchant: protection, level: 2 }
+      - { item: DIAMOND_CHESTPLATE, min: 1, max: 1, weight: 6, enchant: protection, level: 2 }
+      - { item: DIAMOND_LEGGINGS, min: 1, max: 1, weight: 6, enchant: protection, level: 2 }
+      - { item: DIAMOND_BOOTS, min: 1, max: 1, weight: 6, enchant: feather_falling, level: 3 }
+      - { item: DIAMOND_SWORD, min: 1, max: 1, weight: 6, enchant: sharpness, level: 3 }
+      - { item: DIAMOND_PICKAXE, min: 1, max: 1, weight: 6, enchant: efficiency, level: 3 }
+      - { item: DIAMOND_AXE, min: 1, max: 1, weight: 4, enchant: efficiency, level: 3 }
+      - { money: 1000, weight: 10 }
+      - { shards: 400, weight: 5 }
+  EPIC:
+    name: '&5Epic Key'
+    key-item: OMINOUS_TRIAL_KEY
+    rolls: 5
+    daily-limits:
+      sword: 2
+      chestplate: 2
+      helmet: 2
+      leggings: 2
+      boots: 2
+      pickaxe: 2
+      axe: 2
+    loot:
+      - { item: DIAMOND_BLOCK, min: 1, max: 3, weight: 16 }
+      - { item: NETHERITE_SCRAP, min: 1, max: 3, weight: 12 }
+      - { item: ENCHANTED_GOLDEN_APPLE, min: 1, max: 2, weight: 10 }
+      - { item: DIAMOND_HELMET, min: 1, max: 1, weight: 7, enchant: protection, level: 4 }
+      - { item: DIAMOND_CHESTPLATE, min: 1, max: 1, weight: 7, enchant: protection, level: 4 }
+      - { item: DIAMOND_LEGGINGS, min: 1, max: 1, weight: 7, enchant: protection, level: 4 }
+      - { item: DIAMOND_BOOTS, min: 1, max: 1, weight: 7, enchant: feather_falling, level: 4 }
+      - { item: DIAMOND_SWORD, min: 1, max: 1, weight: 6, enchant: sharpness, level: 4 }
+      - { item: DIAMOND_PICKAXE, min: 1, max: 1, weight: 6, enchant: efficiency, level: 5 }
+      - { item: DIAMOND_AXE, min: 1, max: 1, weight: 5, enchant: efficiency, level: 4 }
+      - { item: TOTEM_OF_UNDYING, min: 1, max: 1, weight: 5 }
+      - { item: END_CRYSTAL, min: 2, max: 6, weight: 6 }
+      - { item: GLOWSTONE, min: 16, max: 32, weight: 8 }
+      - { money: 3000, weight: 10 }
+      - { shards: 1000, weight: 5 }
+  LEGENDARY:
+    name: '&6Legendary Key'
+    key-item: OMINOUS_TRIAL_KEY
+    rolls: 6
+    daily-limits:
+      sword: 2
+      chestplate: 2
+      helmet: 2
+      leggings: 2
+      boots: 2
+      pickaxe: 2
+      axe: 2
+    loot:
+      - { item: NETHERITE_INGOT, min: 1, max: 3, weight: 14 }
+      - { item: ANCIENT_DEBRIS, min: 4, max: 8, weight: 10 }
+      - { item: NETHERITE_HELMET, min: 1, max: 1, weight: 8, enchant: protection, level: 4 }
+      - { item: NETHERITE_CHESTPLATE, min: 1, max: 1, weight: 8, enchant: protection, level: 4 }
+      - { item: NETHERITE_LEGGINGS, min: 1, max: 1, weight: 8, enchant: protection, level: 4 }
+      - { item: NETHERITE_BOOTS, min: 1, max: 1, weight: 8, enchant: feather_falling, level: 4 }
+      - { item: NETHERITE_SWORD, min: 1, max: 1, weight: 7, enchant: sharpness, level: 5 }
+      - { item: NETHERITE_PICKAXE, min: 1, max: 1, weight: 7, enchant: efficiency, level: 5 }
+      - { item: NETHERITE_AXE, min: 1, max: 1, weight: 6, enchant: sharpness, level: 5 }
+      - { item: ENCHANTED_GOLDEN_APPLE, min: 4, max: 8, weight: 9 }
+      - { item: TOTEM_OF_UNDYING, min: 2, max: 4, weight: 7 }
+      - { item: RESPAWN_ANCHOR, min: 1, max: 2, weight: 5 }
+      # Anchors are useless without glowstone to charge them.
+      - { item: GLOWSTONE, min: 32, max: 64, weight: 9 }
+      - { money: 10000, weight: 9 }
+      - { shards: 3000, weight: 6 }
+
+# ------------------------------------------------------------
+#  Spawn protection
+#  A circle around the world spawn point, which /buildspawn
+#  sets. Staff (Mod and above) are exempt.
+# ------------------------------------------------------------
+protection:
+  enabled: true
+  radius: 45
+  # Set false to test protection on your own staff account.
+  staff-bypass: true
+
+# ------------------------------------------------------------
+#  TNT spawner block, run by the plugin rather than by vanilla
+# ------------------------------------------------------------
+tnt-spawner:
+  interval-seconds: 3
+  trigger-radius: 12
+  fuse-ticks: 60
+  tnt-per-cycle: 1
+  # Blocks above the spawner that the TNT appears at.
+  spawn-height: 0.6
+  # Keeps the spawner from being destroyed by its own TNT. Set false if you
+  # would rather it be consumed after a few blasts.
+  protect-block: true

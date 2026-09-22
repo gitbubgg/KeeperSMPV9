@@ -1,0 +1,119 @@
+name: KeeperSMP
+version: '${project.version}'
+main: net.keeper.smp.KeeperPlugin
+api-version: '26.2'
+author: KeeperSMP
+description: Economy, shop, auction house, homes, teleports, ranks and Stripe rank delivery for a Java+Bedrock Paper server.
+softdepend: [floodgate, Geyser-Spigot]
+
+commands:
+  menu:
+    description: Open the server menu.
+    aliases: [smp]
+  shop:
+    description: Open the item shop.
+  sell:
+    description: Sell the item in your hand. /sell all sells your whole inventory.
+  autosell:
+    description: Toggle auto-selling of picked up items (Keeper+ and above).
+  auction:
+    description: Open the auction house.
+    aliases: [ah]
+  sethome:
+    description: Set a home at your location. /sethome <name>
+  home:
+    description: Teleport to a home. /home [name]
+  delhome:
+    description: Delete a home. /delhome <name>
+  homes:
+    description: List your homes.
+  rtp:
+    description: Teleport somewhere random.
+    aliases: [wild]
+  rtpq:
+    description: Join the random PvP drop queue.
+  tpa:
+    description: Request to teleport to a player. /tpa <player>
+  tpahere:
+    description: Request a player teleport to you. /tpahere <player>
+  tpaccept:
+    description: Accept the pending teleport request.
+    aliases: [tpyes]
+  tpdeny:
+    description: Deny the pending teleport request.
+    aliases: [tpno]
+  back:
+    description: Return to your previous location.
+  ec:
+    description: Open your ender chest anywhere (Keeper++ and above).
+    aliases: [enderchest]
+  craft:
+    description: Open a crafting table anywhere (Keeper++ and above).
+    aliases: [workbench]
+  nick:
+    description: Set a coloured nickname (Keeper+ and above). /nick <name>
+  settings:
+    description: Open your personal settings.
+  rank:
+    description: View and purchase ranks.
+    aliases: [ranks]
+  lobby:
+    description: Teleport to the lobby at world spawn.
+    aliases: [spawn, hub]
+  setlobby:
+    description: Staff - set the /lobby point and world spawn to where you stand.
+  value:
+    description: Price the item in your hand without selling it.
+    aliases: [worth, price]
+  balance:
+    description: Check your balance.
+    aliases: [bal, money]
+  pay:
+    description: Pay another player. /pay <player> <amount>
+  grantrank:
+    description: Staff - grant a rank. /grantrank <player> <rank> <days>
+  eco:
+    description: Staff - adjust balances. /eco <give|take|set> <player> <amount>
+  fly:
+    description: Toggle flight (Mod and above).
+  gmc:
+    description: Toggle creative mode (Mod and above).
+  forcetp:
+    description: Teleport to a player without asking (Mod and above). /forcetp <player>
+    aliases: [ftp]
+  afk:
+    description: Go AFK and earn shards each minute.
+  shardshop:
+    description: Spend shards on spawners, netherite and crate keys.
+    aliases: [shards, sshop]
+  spectator:
+    description: Staff - toggle spectator mode.
+    aliases: [spec, gmsp]
+  spawnstash:
+    description: Staff - place a bait stash that pings staff when opened.
+    aliases: [stash]
+  usekey:
+    description: Open the nearest crate with the key in your hand.
+    aliases: [crate, openkey]
+  clearcrates:
+    description: Staff - unregister every crate block.
+  setcrate:
+    description: Staff - mark the block you are looking at as a crate. /setcrate [tier|ANY]
+  delcrate:
+    description: Staff - stop the block you are looking at being a crate.
+  givekey:
+    description: Staff - give a crate key. /givekey <player> <tier> [amount]
+  buildspawn:
+    description: Owner - generate a spawn plaza where you stand. Destructive.
+  spawnfence:
+    description: Owner - add the invisible barrier ring to an existing spawn.
+  keeper:
+    description: Plugin admin. /keeper reload | /keeper stripe
+
+permissions:
+  keeper.staff.mod:
+    default: false
+  keeper.staff.admin:
+    default: false
+  keeper.staff.owner:
+    default: false
