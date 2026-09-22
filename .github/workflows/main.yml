@@ -56,11 +56,15 @@ jobs:
           user="${FALIX_SFTP_USER:-$embedded_user}"
           port="${FALIX_SFTP_PORT:-${embedded_port:-22}}"
 
+          sudo apt-get -qq update && sudo apt-get -qq install -y sshpass
+
           echo "Connecting to sftp://$host:$port as $user"
-          curl -sS --insecure \
-            -u "${user}:${FALIX_SFTP_PASSWORD}" \
-            -T KeeperSMP.jar \
-            "sftp://${host}:${port}/plugins/KeeperSMP.jar"
+          export SSHPASS="$FALIX_SFTP_PASSWORD"
+          echo "put KeeperSMP.jar /plugins/KeeperSMP.jar" | sshpass -e sftp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -P "$port" \
+            "${user}@${host}"
       - name: Restart server so the new jar loads
         env:
           FALIX_PANEL_URL: ${{ secrets.FALIX_PANEL_URL }}
