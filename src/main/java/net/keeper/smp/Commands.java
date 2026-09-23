@@ -443,11 +443,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 
         var inv = player.getInventory();
         inv.setItem(0, axe);
-        inv.setItem(2, new ItemStack(Material.ENDER_PEARL, 15));
+        inv.setItem(1, new ItemStack(Material.ENDER_PEARL, 16));
+        inv.setItem(2, new ItemStack(Material.ENDER_PEARL, 16));
         inv.setItem(3, new ItemStack(Material.GLOWSTONE, 64));
         inv.setItem(4, new ItemStack(Material.OBSIDIAN, 64));
         inv.setItem(5, new ItemStack(Material.RESPAWN_ANCHOR, 64));
-        inv.setItem(6, new ItemStack(Material.END_CRYSTAL, 1));
+        inv.setItem(6, new ItemStack(Material.END_CRYSTAL, 64));
         inv.setItem(7, new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 64));
         inv.setItem(8, new ItemStack(Material.GOLDEN_APPLE, 64));
         inv.setItem(16, elytra);
