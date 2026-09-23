@@ -69,7 +69,6 @@ public class Teleport implements Listener {
 
     /** True if the player may not teleport right now, with a message sent. */
     public boolean blockedByCombat(Player player) {
-        if (plugin.ranks().of(player).isStaff()) return false;
         if (!inCombat(player)) return false;
         player.sendMessage(Util.text("&cYou are in combat. Wait &f" + combatLeft(player) + "s&c."));
         return true;

@@ -1,6 +1,7 @@
 package net.keeper.smp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -8,8 +9,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,6 +135,12 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "playtime" -> player.sendMessage(Util.text("&7Total playtime: &f"
                     + plugin.playtime().formatted(player.getUniqueId())));
             case "gunfight" -> gunfight(player, rank, args);
+
+            case "ownerkit" -> {
+                if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
+                if (plugin.teleport().blockedByCombat(player)) return true;
+                ownerKit(player);
+            }
 
             case "auction" -> auction(player, args);
 
@@ -401,6 +412,66 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
         plugin.gunfight().join(player);
         return true;
+    }
+
+    /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
+    private void ownerKit(Player player) {
+        player.getInventory().clear();
+        player.getInventory().setArmorContents(new ItemStack[]{
+                purpleLeather(Material.LEATHER_BOOTS),
+                purpleLeather(Material.LEATHER_LEGGINGS),
+                purpleLeather(Material.LEATHER_CHESTPLATE),
+                purpleLeather(Material.LEATHER_HELMET)
+        });
+
+        ItemStack mace = new ItemStack(Material.MACE);
+        ItemMeta maceMeta = mace.getItemMeta();
+        maceMeta.displayName(Util.text("&5Owner's Mace"));
+        mace.setItemMeta(maceMeta);
+        mace.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
+        mace.addUnsafeEnchantment(Enchantment.MENDING, 1);
+
+        ItemStack elytra = new ItemStack(Material.ELYTRA);
+        elytra.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
+        elytra.addUnsafeEnchantment(Enchantment.MENDING, 1);
+
+        ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
+        EnchantmentStorageMeta bookMeta = (EnchantmentStorageMeta) book.getItemMeta();
+        bookMeta.addStoredEnchant(Enchantment.PROTECTION, 4, true);
+        bookMeta.addStoredEnchant(Enchantment.SHARPNESS, 5, true);
+        bookMeta.addStoredEnchant(Enchantment.EFFICIENCY, 5, true);
+        book.setItemMeta(bookMeta);
+
+        var inv = player.getInventory();
+        inv.setItem(0, mace);
+        inv.setItem(2, new ItemStack(Material.ENDER_PEARL, 15));
+        inv.setItem(3, new ItemStack(Material.HAY_BLOCK, 64));
+        inv.setItem(4, new ItemStack(Material.OBSIDIAN, 64));
+        inv.setItem(5, new ItemStack(Material.NETHERITE_BLOCK, 64));
+        inv.setItem(6, new ItemStack(Material.NETHER_STAR, 1));
+        inv.setItem(7, new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 64));
+        inv.setItem(8, new ItemStack(Material.GOLDEN_APPLE, 64));
+        inv.setItem(16, elytra);
+        inv.setItem(17, book);
+        for (int slot = 0; slot < 36; slot++) {
+            if (inv.getItem(slot) == null) inv.setItem(slot, new ItemStack(Material.TOTEM_OF_UNDYING));
+        }
+
+        player.sendMessage(Util.text("&8&m----------------------------"));
+        player.sendMessage(Util.text(" &5&lOWNER KIT &7given."));
+        player.sendMessage(Util.text("&8&m----------------------------"));
+    }
+
+    private ItemStack purpleLeather(Material material) {
+        ItemStack stack = new ItemStack(material);
+        LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
+        meta.setColor(Color.fromRGB(0x9B30FF));
+        stack.setItemMeta(meta);
+        stack.addUnsafeEnchantment(Enchantment.PROTECTION, 4);
+        stack.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
+        stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
+        stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
+        return stack;
     }
 
     private void auction(Player player, String[] args) {

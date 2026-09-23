@@ -121,6 +121,8 @@ commands:
   gunfight:
     description: Queue for a 1v1 gun duel. Gun quality depends on your playtime. /gunfight leave to cancel.
     aliases: [duel, guns]
+  ownerkit:
+    description: Owner - clear your inventory and give the fixed owner loadout. Blocked in combat.
 
 permissions:
   keeper.staff.mod:
