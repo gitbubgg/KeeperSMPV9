@@ -114,6 +114,7 @@ public class Ranks implements Listener {
         if (rank.nickname && plugin.data().get(player.getUniqueId()).nickname != null) {
             player.displayName(Util.text(plugin.data().get(player.getUniqueId()).nickname));
         }
+        Util.nightVision(player, plugin.data().get(player.getUniqueId()).nightVision);
         if (plugin.tablist() != null) {
             plugin.tablist().apply(player);
             plugin.tablist().decorate(player);

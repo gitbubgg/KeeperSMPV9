@@ -247,6 +247,11 @@ public class Gui implements Listener {
                 canAuto ? "&7cashed in straight away." : "&7See &f/rank&7.",
                 "", canAuto ? "&eClick to toggle" : "&8Unavailable"), "toggle", "autosell"));
 
+        inv.setItem(13, Util.tag(Util.item(Material.GOLDEN_CARROT, 1,
+                "&fNight vision: " + (data.nightVision ? "&aON" : "&cOFF"),
+                "&7Always see clearly in the dark.",
+                "", "&eClick to toggle"), "toggle", "nightvision"));
+
         inv.setItem(22, Util.tag(Util.item(Material.NETHER_STAR, 1, "&eBack to menu"), "menu", null));
         player.openInventory(inv);
     }
@@ -429,6 +434,10 @@ public class Gui implements Listener {
                             return;
                         }
                         data.autoSell = !data.autoSell;
+                    }
+                    case "nightvision" -> {
+                        data.nightVision = !data.nightVision;
+                        Util.nightVision(player, data.nightVision);
                     }
                     default -> {
                         return;

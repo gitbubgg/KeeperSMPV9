@@ -32,6 +32,7 @@ public class Data {
         public boolean acceptTpa = true;
         public boolean acceptTpaHere = true;
         public boolean autoSell = false;
+        public boolean nightVision = false;
 
         public final Map<String, String> homes = new LinkedHashMap<>();
         /** "TIER:group" -> "count;resetEpochMillis" for crate daily limits. */
@@ -101,6 +102,7 @@ public class Data {
         data.acceptTpa = yml.getBoolean("settings.accept-tpa", true);
         data.acceptTpaHere = yml.getBoolean("settings.accept-tpahere", true);
         data.autoSell = yml.getBoolean("settings.auto-sell", false);
+        data.nightVision = yml.getBoolean("settings.night-vision", false);
         data.lastRtp = yml.getLong("last-rtp", 0L);
         data.lastBack = yml.getLong("last-back", 0L);
         data.backLocation = yml.getString("back");
@@ -137,6 +139,7 @@ public class Data {
         yml.set("settings.accept-tpa", data.acceptTpa);
         yml.set("settings.accept-tpahere", data.acceptTpaHere);
         yml.set("settings.auto-sell", data.autoSell);
+        yml.set("settings.night-vision", data.nightVision);
         yml.set("last-rtp", data.lastRtp);
         yml.set("last-back", data.lastBack);
         yml.set("back", data.backLocation);

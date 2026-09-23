@@ -7,10 +7,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -159,5 +162,15 @@ public final class Util {
 
     public static List<String> lines(String... s) {
         return new ArrayList<>(Arrays.asList(s));
+    }
+
+    /** Permanent, particle-free night vision, on or off, for the /settings toggle. */
+    public static void nightVision(Player player, boolean on) {
+        if (on) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,
+                    PotionEffect.INFINITE_DURATION, 0, true, false));
+        } else {
+            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        }
     }
 }

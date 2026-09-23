@@ -13,11 +13,12 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-23 r14 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-23 r15 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
             + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
-            + "elytra-stock, end-loot-strip, forcetpahere, shulker-shop)";
+            + "elytra-stock, end-loot-strip, forcetpahere, shulker-shop, "
+            + "nightvision-setting)";
 
 
     private Data data;
