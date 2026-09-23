@@ -13,12 +13,12 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-23 r16 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-23 r17 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
             + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
             + "elytra-stock, end-loot-strip, forcetpahere, shulker-shop, "
-            + "nightvision-setting, nether-debris-limit)";
+            + "nightvision-setting, nether-debris-limit, gunfight)";
 
 
     private Data data;
@@ -43,6 +43,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Sidebar sidebar;
     private EndLoot endLoot;
     private NetherLimit netherLimit;
+    private Gunfight gunfight;
 
     @Override
     public void onEnable() {
@@ -75,6 +76,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         sidebar = new Sidebar(this);
         endLoot = new EndLoot(this);
         netherLimit = new NetherLimit(this);
+        gunfight = new Gunfight(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -84,7 +86,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 "afk", "shardshop", "spectator", "spawnstash", "setcrate", "delcrate", "givekey",
                 "usekey", "clearcrates",
                 "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
-                "daily", "playtime", "upgrade", "forcetpahere"
+                "daily", "playtime", "upgrade", "forcetpahere", "gunfight"
         };
         for (String name : names) {
             if (getCommand(name) == null) {
@@ -112,6 +114,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(endLoot, this);
         endLoot.sweepLoadedChunks();
         Bukkit.getPluginManager().registerEvents(netherLimit, this);
+        Bukkit.getPluginManager().registerEvents(gunfight, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -169,6 +172,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         shards.reload();
         playtime.reload();
         daily.reload();
+        gunfight.reload();
     }
 
     /**
@@ -285,5 +289,9 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public NetherLimit netherLimit() {
         return netherLimit;
+    }
+
+    public Gunfight gunfight() {
+        return gunfight;
     }
 }

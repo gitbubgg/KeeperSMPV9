@@ -118,6 +118,9 @@ commands:
     description: Claim your daily login reward. Streaks give bigger rewards.
   playtime:
     description: Check your total playtime on the server.
+  gunfight:
+    description: Queue for a 1v1 gun duel. Gun quality depends on your playtime. /gunfight leave to cancel.
+    aliases: [duel, guns]
 
 permissions:
   keeper.staff.mod:

@@ -654,3 +654,23 @@ end-loot:
 # ------------------------------------------------------------
 nether-limit:
   ancient-debris: 25000
+
+# ------------------------------------------------------------
+#  /gunfight  -  queues two players for a 1v1 duel with a random
+#  reskinned ranged weapon ("gun"). Key is minutes played needed to
+#  unlock that tier for the random pool; power is a Power enchant
+#  level, multishot only applies to a CROSSBOW material.
+#  Set the two arena spawn points in-game with /gunfight setpos1
+#  and /gunfight setpos2 (staff only); falls back to /lobby if unset.
+# ------------------------------------------------------------
+gunfight:
+  reward-money: 5000
+  arena:
+    pos1: null
+    pos2: null
+  tiers:
+    0:    { name: "&7Rusty Pistol",  material: CROSSBOW, power: 1 }
+    60:   { name: "&fSMG",           material: BOW,       power: 2 }
+    300:  { name: "&eShotgun",       material: CROSSBOW,  power: 2, multishot: true }
+    1000: { name: "&6Sniper Rifle",  material: BOW,       power: 4 }
+    3000: { name: "&cRailgun",       material: CROSSBOW,  power: 5, multishot: true }

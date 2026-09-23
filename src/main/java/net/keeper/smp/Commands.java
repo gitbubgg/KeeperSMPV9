@@ -129,6 +129,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "daily" -> plugin.daily().claim(player);
             case "playtime" -> player.sendMessage(Util.text("&7Total playtime: &f"
                     + plugin.playtime().formatted(player.getUniqueId())));
+            case "gunfight" -> gunfight(player, rank, args);
 
             case "auction" -> auction(player, args);
 
@@ -382,6 +383,26 @@ public class Commands implements CommandExecutor, TabCompleter {
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, 1f, 1.2f);
     }
 
+    private boolean gunfight(Player player, Rank rank, String[] args) {
+        if (args.length > 0) {
+            switch (args[0].toLowerCase(Locale.ROOT)) {
+                case "leave", "cancel" -> plugin.gunfight().leave(player);
+                case "setpos1" -> {
+                    if (!rank.isStaff()) return deny(player, Rank.MOD);
+                    plugin.gunfight().setArena(player, 1);
+                }
+                case "setpos2" -> {
+                    if (!rank.isStaff()) return deny(player, Rank.MOD);
+                    plugin.gunfight().setArena(player, 2);
+                }
+                default -> plugin.gunfight().join(player);
+            }
+            return true;
+        }
+        plugin.gunfight().join(player);
+        return true;
+    }
+
     private void auction(Player player, String[] args) {
         if (args.length == 0) {
             plugin.gui().openAuction(player, 0, false);
@@ -576,6 +597,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
                 case "sell" -> out.add("all");
+                case "gunfight" -> out.addAll(List.of("leave", "setpos1", "setpos2"));
                 case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank" -> {
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
