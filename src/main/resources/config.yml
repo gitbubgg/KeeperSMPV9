@@ -198,6 +198,7 @@ shop:
   OBSIDIAN: { price: 500,  unit: 64 }
   RESPAWN_ANCHOR: { price: 3000, unit: 64 }
   GLOWSTONE: { price: 100,  unit: 64 }
+  SHULKER_BOX: { price: 8000, unit: 1 }
   DIAMOND_AXE: { price: 250,  unit: 1 }
   DIAMOND_SWORD: { price: 300,  unit: 1 }
   DIAMOND_PICKAXE: { price: 350,  unit: 1 }
@@ -339,6 +340,7 @@ sell:
   END_CRYSTAL: 23.0
   RESPAWN_ANCHOR: 28.0
   NETHERITE_UPGRADE_SMITHING_TEMPLATE: 270.0
+  SHULKER_BOX: 4800.0
   # gear, paid at the listed rate scaled by remaining durability
   IRON_HELMET: 36.0
   IRON_CHESTPLATE: 60.0

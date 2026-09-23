@@ -1,6 +1,7 @@
 package net.keeper.smp;
 
 import org.bukkit.Material;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.io.File;
 import java.io.IOException;
@@ -221,11 +223,22 @@ public class Econ implements Listener {
         return value;
     }
 
+    /** True if this is a shulker box still holding items, which selling would destroy. */
+    private boolean hasShulkerContents(ItemStack stack) {
+        return stack.getItemMeta() instanceof BlockStateMeta meta
+                && meta.getBlockState() instanceof ShulkerBox box
+                && !box.getInventory().isEmpty();
+    }
+
     /** Sells the item in the main hand. */
     public void sellHand(Player player) {
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand.getType().isAir()) {
             player.sendMessage(Util.text("&cHold the item you want to sell in your main hand."));
+            return;
+        }
+        if (hasShulkerContents(hand)) {
+            player.sendMessage(Util.text("&cEmpty that shulker box before selling it."));
             return;
         }
         double value = sellValue(player, hand);
@@ -301,6 +314,7 @@ public class Econ implements Listener {
         for (int i = 0; i < contents.length; i++) {
             ItemStack stack = contents[i];
             if (stack == null || stack.getType().isAir()) continue;
+            if (hasShulkerContents(stack)) continue;
             double value = sellValue(player, stack);
             if (value <= 0) continue;
             total += value;
@@ -329,6 +343,7 @@ public class Econ implements Listener {
             return;
         }
         ItemStack stack = event.getItem().getItemStack();
+        if (hasShulkerContents(stack)) return;
         double value = sellValue(player, stack);
         if (value <= 0) return;
         event.setCancelled(true);
