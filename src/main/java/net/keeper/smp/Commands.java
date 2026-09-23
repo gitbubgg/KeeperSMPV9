@@ -1,7 +1,6 @@
 package net.keeper.smp;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -418,18 +416,19 @@ public class Commands implements CommandExecutor, TabCompleter {
     private void ownerKit(Player player) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
-                purpleLeather(Material.LEATHER_BOOTS),
-                purpleLeather(Material.LEATHER_LEGGINGS),
-                purpleLeather(Material.LEATHER_CHESTPLATE),
-                purpleLeather(Material.LEATHER_HELMET)
+                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 4),
+                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 4),
+                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 4),
+                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 4)
         });
 
-        ItemStack mace = new ItemStack(Material.MACE);
-        ItemMeta maceMeta = mace.getItemMeta();
-        maceMeta.displayName(Util.text("&5Owner's Mace"));
-        mace.setItemMeta(maceMeta);
-        mace.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
-        mace.addUnsafeEnchantment(Enchantment.MENDING, 1);
+        ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
+        ItemMeta axeMeta = axe.getItemMeta();
+        axeMeta.displayName(Util.text("&5Owner's Axe"));
+        axe.setItemMeta(axeMeta);
+        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
+        axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
+        axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
 
         ItemStack elytra = new ItemStack(Material.ELYTRA);
         elytra.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
@@ -443,7 +442,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         book.setItemMeta(bookMeta);
 
         var inv = player.getInventory();
-        inv.setItem(0, mace);
+        inv.setItem(0, axe);
         inv.setItem(2, new ItemStack(Material.ENDER_PEARL, 15));
         inv.setItem(3, new ItemStack(Material.HAY_BLOCK, 64));
         inv.setItem(4, new ItemStack(Material.OBSIDIAN, 64));
@@ -462,12 +461,9 @@ public class Commands implements CommandExecutor, TabCompleter {
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
 
-    private ItemStack purpleLeather(Material material) {
+    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level) {
         ItemStack stack = new ItemStack(material);
-        LeatherArmorMeta meta = (LeatherArmorMeta) stack.getItemMeta();
-        meta.setColor(Color.fromRGB(0x9B30FF));
-        stack.setItemMeta(meta);
-        stack.addUnsafeEnchantment(Enchantment.PROTECTION, 4);
+        stack.addUnsafeEnchantment(mainEnchant, level);
         stack.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
         stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
         stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
