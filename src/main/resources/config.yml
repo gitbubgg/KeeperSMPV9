@@ -234,9 +234,9 @@ sell:
   REDSTONE: 1.2
   QUARTZ: 2.0
   AMETHYST_SHARD: 2.5
-  ANCIENT_DEBRIS: 320.0
+  ANCIENT_DEBRIS: 3000000.0
   NETHERITE_SCRAP: 350.0
-  NETHERITE_INGOT: 1500.0
+  NETHERITE_INGOT: 10000000.0
   # raw ore blocks, worth less than what you smelt out of them
   IRON_ORE: 2.5
   DEEPSLATE_IRON_ORE: 2.5
@@ -647,3 +647,10 @@ sidebar:
 # ------------------------------------------------------------
 end-loot:
   remove-elytra: true
+
+# ------------------------------------------------------------
+#  Ancient debris is a genuinely finite resource: once this many
+#  have been mined out of the world, no more can be broken.
+# ------------------------------------------------------------
+nether-limit:
+  ancient-debris: 25000
