@@ -246,6 +246,12 @@ public class Shards implements Listener {
             case "key" -> {
                 return plugin.crates().createKey(item.payload(), 1);
             }
+            case "excavator" -> {
+                return plugin.specialTools().createExcavator();
+            }
+            case "treefeller" -> {
+                return plugin.specialTools().createTreefeller();
+            }
             default -> {
                 Material material = Material.matchMaterial(item.payload());
                 if (material == null) return null;

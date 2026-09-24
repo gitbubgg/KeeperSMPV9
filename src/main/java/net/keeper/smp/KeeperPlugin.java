@@ -13,13 +13,13 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-23 r18 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-24 r19 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
             + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
             + "elytra-stock, end-loot-strip, forcetpahere, shulker-shop, "
             + "nightvision-setting, nether-debris-limit, gunfight, "
-            + "ownerkit, combat-teleport-fix)";
+            + "ownerkit, combat-teleport-fix, excavator, treefeller)";
 
 
     private Data data;
@@ -45,6 +45,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private EndLoot endLoot;
     private NetherLimit netherLimit;
     private Gunfight gunfight;
+    private SpecialTools specialTools;
 
     @Override
     public void onEnable() {
@@ -78,6 +79,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         endLoot = new EndLoot(this);
         netherLimit = new NetherLimit(this);
         gunfight = new Gunfight(this);
+        specialTools = new SpecialTools(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -116,6 +118,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         endLoot.sweepLoadedChunks();
         Bukkit.getPluginManager().registerEvents(netherLimit, this);
         Bukkit.getPluginManager().registerEvents(gunfight, this);
+        Bukkit.getPluginManager().registerEvents(specialTools, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -294,5 +297,9 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public Gunfight gunfight() {
         return gunfight;
+    }
+
+    public SpecialTools specialTools() {
+        return specialTools;
     }
 }

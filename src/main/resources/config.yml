@@ -446,6 +446,24 @@ shardshop:
     lore:
       - '&7The best table in the game.'
       - '&8Announced to the whole server when opened.'
+  EXCAVATOR:
+    icon: DIAMOND_PICKAXE
+    name: '&bExcavator'
+    price: 12000
+    kind: excavator
+    payload: ''
+    lore:
+      - '&7Breaks a 3x3 area in one hit,'
+      - '&7facing whichever way you are digging.'
+  TREE_FELLER:
+    icon: DIAMOND_AXE
+    name: '&2Tree Feller'
+    price: 12000
+    kind: treefeller
+    payload: ''
+    lore:
+      - '&7Break one log and the whole connected'
+      - '&7tree comes down with it.'
 
 # ------------------------------------------------------------
 #  Crates  -  the KEY decides the loot, not the crate block.
