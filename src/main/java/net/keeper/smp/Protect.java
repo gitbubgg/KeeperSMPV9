@@ -13,7 +13,9 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -160,5 +162,19 @@ public class Protect implements Listener {
         if (protectedArea(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
+    }
+
+    /** No PvP inside the protected circle, lobby included since it moves world spawn. */
+    @EventHandler(ignoreCancelled = true)
+    public void onCombat(EntityDamageByEntityEvent event) {
+        if (!plugin.getConfig().getBoolean("protection.disable-pvp", true)) return;
+        if (!(event.getEntity() instanceof Player victim)) return;
+        Player attacker = event.getDamager() instanceof Player p ? p
+                : event.getDamager() instanceof Projectile proj && proj.getShooter() instanceof Player shooter
+                ? shooter : null;
+        if (attacker == null || attacker.equals(victim)) return;
+        if (!protectedArea(victim.getLocation()) && !protectedArea(attacker.getLocation())) return;
+        event.setCancelled(true);
+        attacker.sendActionBar(Util.text("&cCombat is disabled here."));
     }
 }

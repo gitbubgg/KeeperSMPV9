@@ -605,6 +605,9 @@ protection:
   radius: 45
   # Set false to test protection on your own staff account.
   staff-bypass: true
+  # No PvP damage between players while either one is inside the protected
+  # circle (which follows /setlobby, since that also moves world spawn).
+  disable-pvp: true
 
 # ------------------------------------------------------------
 #  TNT spawner block, run by the plugin rather than by vanilla
