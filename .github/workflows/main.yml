@@ -3,6 +3,11 @@ name: Build plugin jar
 on:
   push:
   workflow_dispatch:
+    inputs:
+      debug_fetch_geyser_config:
+        description: 'Print Geyser-Spigot/Floodgate config over SFTP (debug only, does not build or deploy)'
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -181,3 +186,51 @@ jobs:
             -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) KeeperSMP-Deploy" \
             -d '{"signal":"restart"}' \
           || echo "::warning::Could not trigger an automatic restart (the FalixNodes panel API may be blocking scripted requests). The new jar is uploaded, but you'll need to restart the server manually from the panel to load it."
+
+  debug-geyser-config:
+    if: github.event_name == 'workflow_dispatch' && inputs.debug_fetch_geyser_config == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and print Geyser-Spigot/Floodgate config over SFTP
+        env:
+          FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
+          FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
+          FALIX_SFTP_USER: ${{ secrets.FALIX_SFTP_USER }}
+          FALIX_SFTP_PASSWORD: ${{ secrets.FALIX_SFTP_PASSWORD }}
+        run: |
+          # Read-only diagnostic for the Bedrock "Transferred to another
+          # server" issue: prints the remote/address settings Geyser and
+          # Floodgate are actually using on the live server, since a stale
+          # or mismatched remote address (e.g. after FalixNodes moves the
+          # server to a different node) is the leading suspect.
+          raw="${FALIX_SFTP_HOST#sftp://}"
+          raw="${raw%%/*}"
+          if [[ "$raw" == *"@"* ]]; then
+            embedded_user="${raw%%@*}"
+            raw="${raw#*@}"
+          else
+            embedded_user=""
+          fi
+          host="${raw%%:*}"
+          if [[ "$raw" == *":"* ]]; then
+            embedded_port="${raw#*:}"
+          else
+            embedded_port=""
+          fi
+          user="${FALIX_SFTP_USER:-$embedded_user}"
+          port="${FALIX_SFTP_PORT:-${embedded_port:-22}}"
+
+          sudo apt-get -qq update && sudo apt-get -qq install -y sshpass
+          export SSHPASS="$FALIX_SFTP_PASSWORD"
+
+          for f in "plugins/Geyser-Spigot/config.yml" "plugins/floodgate/config.yml" "server.properties"; do
+            out="downloaded_$(basename "$f")"
+            echo "get $f $out" | sshpass -e sftp \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -P "$port" \
+              "${user}@${host}" || true
+            echo "::group::$f"
+            if [ -f "$out" ]; then cat "$out"; else echo "(could not download $f)"; fi
+            echo "::endgroup::"
+          done
