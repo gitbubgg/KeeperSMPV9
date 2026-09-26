@@ -50,6 +50,9 @@ commands:
   craft:
     description: Open a crafting table anywhere (Keeper++ and above).
     aliases: [workbench]
+  smtable:
+    description: Open a smithing table anywhere. No table needed, open to everyone.
+    aliases: [smithing, smith]
   nick:
     description: Set a coloured nickname (Keeper+ and above). /nick <name>
   settings:

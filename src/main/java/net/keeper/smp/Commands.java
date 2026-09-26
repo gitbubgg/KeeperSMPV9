@@ -177,6 +177,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (!rank.craftingtable) return deny(sender, Rank.KEEPER_PLUS2);
                 player.openWorkbench(null, true);
             }
+            case "smtable" -> player.openSmithingTable(null, true);
             case "nick" -> {
                 if (!rank.nickname) return deny(sender, Rank.KEEPER_PLUS);
                 if (args.length == 0) {
