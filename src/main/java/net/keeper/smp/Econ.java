@@ -32,6 +32,8 @@ public class Econ implements Listener {
     private final Map<Material, Double> sell = new LinkedHashMap<>();
     /** Remaining stock for shop entries with a limited quantity, persisted across restarts. */
     private final Map<Material, Integer> stockRemaining = new LinkedHashMap<>();
+    private double defaultSellPrice;
+    private double elytraEnchantBonusPerLevel;
 
     public Econ(KeeperPlugin plugin) {
         this.plugin = plugin;
@@ -65,6 +67,9 @@ public class Econ implements Listener {
     public void reload() {
         shop.clear();
         sell.clear();
+        defaultSellPrice = plugin.getConfig().getDouble("general.default-sell-price", 0.0);
+        elytraEnchantBonusPerLevel = plugin.getConfig()
+                .getDouble("general.elytra-enchant-bonus-per-level", 0.0);
 
         ConfigurationSection shopSection = plugin.getConfig().getConfigurationSection("shop");
         if (shopSection != null) {
@@ -115,13 +120,18 @@ public class Econ implements Listener {
         return stockRemaining.getOrDefault(material, -1);
     }
 
-    /** Base sell price for one unit, before rank bonus and durability. */
+    /**
+     * Base sell price for one unit, before rank bonus and durability. Anything
+     * not explicitly priced falls back to the configured default, so /sell
+     * accepts everything except what sellValue() excludes outright (crate keys).
+     */
     public double basePrice(Material material) {
-        return sell.getOrDefault(material, 0.0);
+        Double explicit = sell.get(material);
+        return explicit != null ? explicit : defaultSellPrice;
     }
 
     public boolean sellable(Material material) {
-        return sell.containsKey(material);
+        return basePrice(material) > 0;
     }
 
     // ---------------- balances ----------------
@@ -213,10 +223,15 @@ public class Econ implements Listener {
     /** What a player is paid for a specific stack, durability and rank included. */
     public double sellValue(Player player, ItemStack stack) {
         if (stack == null || stack.getType().isAir()) return 0;
+        if (plugin.crates().keyTier(stack) != null) return 0;
         double base = basePrice(stack.getType());
         if (base <= 0) return 0;
         double bonus = plugin.ranks().of(player).sellBonus;
         double value = base * stack.getAmount() * (1.0 + bonus);
+        if (stack.getType() == Material.ELYTRA && elytraEnchantBonusPerLevel > 0) {
+            int levels = stack.getEnchantments().values().stream().mapToInt(Integer::intValue).sum();
+            value *= (1.0 + levels * elytraEnchantBonusPerLevel);
+        }
         if (stack.getType().getMaxDurability() > 0) {
             value *= Util.condition(stack);
         }

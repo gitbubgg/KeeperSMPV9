@@ -416,10 +416,10 @@ public class Commands implements CommandExecutor, TabCompleter {
     private void ownerKit(Player player) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
-                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 4),
-                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 4),
-                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 4),
-                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 4)
+                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6),
+                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6),
+                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6),
+                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6)
         });
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);

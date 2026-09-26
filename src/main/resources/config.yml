@@ -14,6 +14,12 @@ general:
   # mob spawning switched off.
   mob-cull-enabled: true
   mob-cull-radius: 64
+  # /sell price for anything NOT listed under sell: below, so everything is
+  # sellable somewhere. Crate keys are always excluded, whatever this is.
+  default-sell-price: 1.0
+  # extra fraction of an elytra's /sell price added per total enchantment
+  # level on it (e.g. Unbreaking III + Mending I = 4 levels).
+  elytra-enchant-bonus-per-level: 0.1
 
 stripe:
   enabled: false
@@ -236,7 +242,8 @@ sell:
   AMETHYST_SHARD: 2.5
   ANCIENT_DEBRIS: 3000000.0
   NETHERITE_SCRAP: 350.0
-  NETHERITE_INGOT: 10000000.0
+  NETHERITE_INGOT: 30000000.0
+  NETHERITE_BLOCK: 280000000.0
   # raw ore blocks, worth less than what you smelt out of them
   IRON_ORE: 2.5
   DEEPSLATE_IRON_ORE: 2.5
@@ -333,7 +340,7 @@ sell:
   SALMON: 0.7
   COOKED_SALMON: 1.5
   # high value goods
-  ELYTRA: 35000000.0
+  ELYTRA: 400000000.0
   TOTEM_OF_UNDYING: 900.0
   GOLDEN_APPLE: 14.0
   ENCHANTED_GOLDEN_APPLE: 600.0
