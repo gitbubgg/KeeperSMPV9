@@ -92,7 +92,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 "afk", "shardshop", "spectator", "spawnstash", "setcrate", "delcrate", "givekey",
                 "usekey", "clearcrates",
                 "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
-                "daily", "playtime", "upgrade", "forcetpahere", "gunfight", "ownerkit", "autoplace"
+                "daily", "playtime", "upgrade", "forcetpahere", "gunfight", "ownerkit", "autoplace",
+                "giveshards"
         };
         for (String name : names) {
             if (getCommand(name) == null) {

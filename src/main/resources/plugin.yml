@@ -125,6 +125,8 @@ commands:
     description: Owner - clear your inventory and give the fixed owner loadout. Blocked in combat.
   autoplace:
     description: Owner - toggle placing a full 3x3 platform of whatever block you place.
+  giveshards:
+    description: Owner - give shards to a player. /giveshards <player> <amount>
 
 permissions:
   keeper.staff.mod:

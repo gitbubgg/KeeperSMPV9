@@ -310,6 +310,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
             case "grantrank" -> grantRank(sender, args);
             case "eco" -> eco(sender, args);
+            case "giveshards" -> giveShards(sender, args);
 
             default -> {
                 return false;
@@ -590,6 +591,42 @@ public class Commands implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean giveShards(CommandSender sender, String[] args) {
+        boolean allowed = !(sender instanceof Player p) || plugin.ranks().of(p).atLeast(Rank.OWNER);
+        if (!allowed) return deny(sender, Rank.OWNER);
+        if (args.length < 2) {
+            sender.sendMessage(Util.text("&cUsage: /giveshards <player> <amount>"));
+            return true;
+        }
+        Player target = Bukkit.getPlayerExact(args[0]);
+        UUID uuid;
+        String shown = args[0];
+        if (target != null) {
+            uuid = target.getUniqueId();
+            shown = target.getName();
+        } else {
+            Data.PlayerData cached = plugin.data().byName(args[0]);
+            if (cached == null) {
+                sender.sendMessage(Util.text("&cThat player has to be online, or have joined before."));
+                return true;
+            }
+            uuid = cached.uuid;
+        }
+        double parsed = Util.parseAmount(args[1]);
+        if (parsed < 0) {
+            sender.sendMessage(Util.text("&cThat is not a number. Try 500, 20k or 1.5m."));
+            return true;
+        }
+        long amount = Math.round(parsed);
+        plugin.shards().give(uuid, amount);
+        plugin.data().save(uuid);
+        sender.sendMessage(Util.text("&aGave &b" + amount + " shards &ato &f" + shown + "&a."));
+        if (target != null) {
+            target.sendMessage(Util.text("&aYou received &b" + amount + " shards &afrom staff."));
+        }
+        return true;
+    }
+
     private boolean keeper(CommandSender sender, String[] args) {
         boolean allowed = !(sender instanceof Player p) || plugin.ranks().of(p).isStaff();
         if (!allowed) return deny(sender, Rank.MOD);
@@ -673,7 +710,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "sell" -> out.add("all");
                 case "gunfight" -> out.addAll(List.of("leave", "setpos1", "setpos2"));
-                case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank" -> {
+                case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank", "giveshards" -> {
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
                 default -> {
