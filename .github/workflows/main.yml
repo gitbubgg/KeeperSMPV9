@@ -71,7 +71,7 @@ jobs:
             -o UserKnownHostsFile=/dev/null \
             -P "$port" \
             "${user}@${host}"
-      - name: Disable vanilla spawn protection
+      - name: Patch server.properties (spawn-protection, transfers)
         env:
           FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
           FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
@@ -83,7 +83,15 @@ jobs:
           # blocks near spawn entirely, before KeeperSMP's own Protect system
           # or Crates' click handler ever sees the event. KeeperSMP already
           # protects spawn itself, so turn the redundant vanilla one off.
-          # Runs every deploy so a panel reset can't silently bring it back.
+          #
+          # accepts-transfers=true lets FalixNodes' front-end gateway hand
+          # connections off to this backend with a protocol-level Transfer
+          # packet. Geyser has to translate that for Bedrock clients, and
+          # that translation is the leading suspect for the "Transferred to
+          # another server" issue Bedrock players keep hitting even once the
+          # server is confirmed up. Turned off as a test fix.
+          #
+          # Runs every deploy so a panel reset can't silently bring either back.
           raw="${FALIX_SFTP_HOST#sftp://}"
           raw="${raw%%/*}"
           if [[ "$raw" == *"@"* ]]; then
@@ -114,13 +122,18 @@ jobs:
             else
               echo 'spawn-protection=0' >> server.properties
             fi
+            if grep -q '^accepts-transfers=' server.properties; then
+              sed -i 's/^accepts-transfers=.*/accepts-transfers=false/' server.properties
+            else
+              echo 'accepts-transfers=false' >> server.properties
+            fi
             echo "put server.properties server.properties" | sshpass -e sftp \
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
               -P "$port" \
               "${user}@${host}"
           else
-            echo "::warning::Could not download server.properties over SFTP; spawn-protection was left unchanged."
+            echo "::warning::Could not download server.properties over SFTP; spawn-protection/accepts-transfers were left unchanged."
           fi
       - name: Merge new config.yml keys onto the server
         env:
