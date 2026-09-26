@@ -123,6 +123,8 @@ commands:
     aliases: [duel, guns]
   ownerkit:
     description: Owner - clear your inventory and give the fixed owner loadout. Blocked in combat.
+  autoplace:
+    description: Owner - toggle placing a full 3x3 platform of whatever block you place.
 
 permissions:
   keeper.staff.mod:

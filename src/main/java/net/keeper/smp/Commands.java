@@ -140,6 +140,13 @@ public class Commands implements CommandExecutor, TabCompleter {
                 ownerKit(player);
             }
 
+            case "autoplace" -> {
+                if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
+                boolean on = plugin.autoPlace().toggle(player);
+                player.sendMessage(Util.text("&7Auto-place is now " + (on ? "&aON" : "&cOFF")
+                        + "&7. Placing a block fills in the rest of a 3x3 platform of it."));
+            }
+
             case "auction" -> auction(player, args);
 
             case "sethome" -> plugin.homes().set(player, args.length > 0 ? args[0] : "home");
