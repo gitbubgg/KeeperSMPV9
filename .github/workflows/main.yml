@@ -236,6 +236,14 @@ jobs:
           sudo apt-get -qq update && sudo apt-get -qq install -y sshpass
           export SSHPASS="$FALIX_SFTP_PASSWORD"
 
+          echo "::group::plugins/ listing"
+          echo "ls -la plugins/" | sshpass -e sftp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -P "$port" \
+            "${user}@${host}" || true
+          echo "::endgroup::"
+
           for f in "plugins/Geyser-Spigot/config.yml" "plugins/floodgate/config.yml" "server.properties"; do
             out="downloaded_$(basename "$f")"
             echo "get $f $out" | sshpass -e sftp \
