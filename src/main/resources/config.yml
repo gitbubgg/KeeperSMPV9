@@ -690,6 +690,16 @@ deathchest:
   minutes: 10
 
 # ------------------------------------------------------------
+#  Heuristic x-ray flag: mining valuable ore that had no exposed face
+#  before it broke means it couldn't have been legitimately spotted.
+#  This many "blind" breaks within the window pings online staff.
+#  Staff/owner ranks are never flagged.
+# ------------------------------------------------------------
+xray:
+  window-seconds: 120
+  alert-threshold: 3
+
+# ------------------------------------------------------------
 #  TNT spawner block, run by the plugin rather than by vanilla
 # ------------------------------------------------------------
 tnt-spawner:
