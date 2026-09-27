@@ -222,11 +222,16 @@ public class Econ implements Listener {
 
     /** What a player is paid for a specific stack, durability and rank included. */
     public double sellValue(Player player, ItemStack stack) {
+        return sellValue(player.getUniqueId(), player.getName(), stack);
+    }
+
+    /** Same as above, but works for an offline seller (e.g. an auction listing). */
+    public double sellValue(UUID sellerId, String sellerName, ItemStack stack) {
         if (stack == null || stack.getType().isAir()) return 0;
         if (plugin.crates().keyTier(stack) != null) return 0;
         double base = basePrice(stack.getType());
         if (base <= 0) return 0;
-        double bonus = plugin.ranks().of(player).sellBonus;
+        double bonus = plugin.ranks().of(sellerId, sellerName).sellBonus;
         double value = base * stack.getAmount() * (1.0 + bonus);
         if (stack.getType() == Material.ELYTRA && elytraEnchantBonusPerLevel > 0) {
             int levels = stack.getEnchantments().values().stream().mapToInt(Integer::intValue).sum();

@@ -75,12 +75,17 @@ public class Auction {
         }
 
         pending.put(player.getUniqueId(), new Pending(hand.clone(), price));
+        double sellFloor = plugin.econ().sellValue(player, hand);
         double tax = plugin.ranks().of(player).auctionTax;
-        double net = price * (1.0 - tax);
+        double net = Math.max(price, sellFloor) * (1.0 - tax);
         player.sendMessage(Util.text("&8&m--------------------------------"));
         player.sendMessage(Util.text(" &fList " + hand.getAmount() + "x "
                 + Util.nice(hand.getType()) + "&7?"));
         player.sendMessage(Util.text(" &7Price: &f" + plugin.econ().fmt(price)));
+        if (sellFloor > price) {
+            player.sendMessage(Util.text(" &8That is below its &f/sell &8value of &7"
+                    + plugin.econ().fmt(sellFloor) + "&8, so buyers will pay that instead."));
+        }
         player.sendMessage(Util.text(" &7Fee: &f" + Math.round(tax * 100) + "%"
                 + " &7so you receive &a" + plugin.econ().fmt(net)));
         player.sendMessage(Util.text(" &aType /ah confirm &7or &c/ah cancel"));
@@ -166,20 +171,31 @@ public class Auction {
             buyer.sendMessage(Util.text("&cThat is your own listing. Use the Mine tab to pull it back."));
             return;
         }
-        if (!plugin.econ().withdraw(buyer.getUniqueId(), listing.price)) {
-            buyer.sendMessage(Util.text("&cYou need &f" + plugin.econ().fmt(listing.price) + "&c."));
+
+        // A listing priced below the item's guaranteed /sell value is topped up to
+        // that value at purchase time: the seller is never shorted, and the buyer
+        // pays the extra amount on top of the listed price to cover the gap.
+        double sellFloor = plugin.econ().sellValue(listing.seller, listing.sellerName, listing.item);
+        double price = Math.max(listing.price, sellFloor);
+
+        if (!plugin.econ().withdraw(buyer.getUniqueId(), price)) {
+            buyer.sendMessage(Util.text("&cYou need &f" + plugin.econ().fmt(price) + "&c."));
             return;
         }
         listings.remove(id);
 
         double tax = rankTax(listing.seller, listing.sellerName);
-        double net = listing.price * (1.0 - tax);
+        double net = price * (1.0 - tax);
         plugin.econ().deposit(listing.seller, net);
 
         give(buyer, listing.item);
         buyer.sendMessage(Util.text("&aBought &f" + listing.item.getAmount() + "x "
                 + Util.nice(listing.item.getType()) + " &afor &f"
-                + plugin.econ().fmt(listing.price) + "&a."));
+                + plugin.econ().fmt(price) + "&a."));
+        if (price > listing.price) {
+            buyer.sendMessage(Util.text("&8Topped up from the listed " + plugin.econ().fmt(listing.price)
+                    + " to match its guaranteed /sell value."));
+        }
 
         Player seller = Bukkit.getPlayer(listing.seller);
         if (seller != null) {
