@@ -185,7 +185,7 @@ jobs:
           else
             echo "::warning::Could not download config.yml over SFTP; new config keys were not merged."
           fi
-      - name: Accept both RakNet and NetherNet in Geyser-Spigot
+      - name: Fix Geyser-Spigot transport and port-follow settings
         env:
           FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
           FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
@@ -197,6 +197,11 @@ jobs:
           # clients (26.50+) can default to NetherNet, and a client trying
           # NetherNet against a RakNet-only Geyser is a plausible cause of
           # the recurring Bedrock connection failures. "both" accepts either.
+          #
+          # clone-remote-port was false, meaning Geyser stayed bound to its
+          # own fixed port regardless of the Java server-port FalixNodes
+          # hands out (which changes across restarts) - so nothing external
+          # could reach it at all. This makes Geyser follow the Java port.
           raw="${FALIX_SFTP_HOST#sftp://}"
           raw="${raw%%/*}"
           if [[ "$raw" == *"@"* ]]; then
@@ -224,6 +229,11 @@ jobs:
           if [ -f geyser-config.yml ]; then
             sed -i 's/^\( *\)transport: raknet$/\1transport: both/' geyser-config.yml
             sed -i 's/^\( *\)webrtc-port: 0$/\1webrtc-port: 20072/' geyser-config.yml
+            # FalixNodes' free tier only forwards the one Java port it hands
+            # out, and that port changes on restart. Without this, Geyser
+            # stays bound to its own fixed "port:" value regardless, which
+            # nothing external can reach.
+            sed -i 's/^\( *\)clone-remote-port: false$/\1clone-remote-port: true/' geyser-config.yml
             echo "put geyser-config.yml plugins/Geyser-Spigot/config.yml" | sshpass -e sftp \
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
