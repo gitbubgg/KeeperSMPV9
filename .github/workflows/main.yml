@@ -185,6 +185,53 @@ jobs:
           else
             echo "::warning::Could not download config.yml over SFTP; new config keys were not merged."
           fi
+      - name: Accept both RakNet and NetherNet in Geyser-Spigot
+        env:
+          FALIX_SFTP_HOST: ${{ secrets.FALIX_SFTP_HOST }}
+          FALIX_SFTP_PORT: ${{ secrets.FALIX_SFTP_PORT }}
+          FALIX_SFTP_USER: ${{ secrets.FALIX_SFTP_USER }}
+          FALIX_SFTP_PASSWORD: ${{ secrets.FALIX_SFTP_PASSWORD }}
+        run: |
+          # The installed Geyser-Spigot was set to transport: raknet, which
+          # only accepts the older RakNet connection method. Newer Bedrock
+          # clients (26.50+) can default to NetherNet, and a client trying
+          # NetherNet against a RakNet-only Geyser is a plausible cause of
+          # the recurring Bedrock connection failures. "both" accepts either.
+          raw="${FALIX_SFTP_HOST#sftp://}"
+          raw="${raw%%/*}"
+          if [[ "$raw" == *"@"* ]]; then
+            embedded_user="${raw%%@*}"
+            raw="${raw#*@}"
+          else
+            embedded_user=""
+          fi
+          host="${raw%%:*}"
+          if [[ "$raw" == *":"* ]]; then
+            embedded_port="${raw#*:}"
+          else
+            embedded_port=""
+          fi
+          user="${FALIX_SFTP_USER:-$embedded_user}"
+          port="${FALIX_SFTP_PORT:-${embedded_port:-22}}"
+
+          export SSHPASS="$FALIX_SFTP_PASSWORD"
+          echo "get plugins/Geyser-Spigot/config.yml geyser-config.yml" | sshpass -e sftp \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -P "$port" \
+            "${user}@${host}"
+
+          if [ -f geyser-config.yml ]; then
+            sed -i 's/^\( *\)transport: raknet$/\1transport: both/' geyser-config.yml
+            sed -i 's/^\( *\)webrtc-port: 0$/\1webrtc-port: 20072/' geyser-config.yml
+            echo "put geyser-config.yml plugins/Geyser-Spigot/config.yml" | sshpass -e sftp \
+              -o StrictHostKeyChecking=no \
+              -o UserKnownHostsFile=/dev/null \
+              -P "$port" \
+              "${user}@${host}"
+          else
+            echo "::warning::Could not download Geyser-Spigot's config.yml over SFTP; transport was left unchanged."
+          fi
       - name: Restart server so the new jar loads
         env:
           FALIX_PANEL_URL: ${{ secrets.FALIX_PANEL_URL }}
