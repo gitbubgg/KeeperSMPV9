@@ -9,6 +9,13 @@ general:
   rtp-worlds: [world]
   rtp-radius: 5000
   rtp-min-radius: 250
+  # Leave the *-worlds lists empty to auto-detect by dimension type instead.
+  rtp-nether-worlds: [world_nether]
+  rtp-nether-radius: 3000
+  rtp-nether-min-radius: 100
+  rtp-end-worlds: [world_the_end]
+  rtp-end-radius: 200
+  rtp-end-min-radius: 20
   combat-tag-seconds: 20
   # Kill hostile mobs that wander into chunks where everyone nearby has
   # mob spawning switched off.

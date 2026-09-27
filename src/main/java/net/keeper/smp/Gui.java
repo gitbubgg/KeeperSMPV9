@@ -371,7 +371,7 @@ public class Gui implements Listener {
             }
             case "rtp" -> {
                 player.closeInventory();
-                plugin.teleport().rtp(player);
+                plugin.teleport().rtp(player, new String[0]);
             }
             case "sell_hand" -> {
                 plugin.econ().sellHand(player);
