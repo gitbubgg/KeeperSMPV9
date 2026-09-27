@@ -22,11 +22,11 @@ general:
   elytra-enchant-bonus-per-level: 0.1
 
 stripe:
-  enabled: false
+  enabled: true
   # RESTRICTED key only (rk_live_... or rk_test_...), with READ access to
   # Checkout Sessions and Subscriptions. Nothing else. Never put a secret
   # key (sk_...) here.
-  secret-key: 'PASTE_YOUR_RESTRICTED_KEY_HERE'
+  secret-key: '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'
   poll-seconds: 60
   # Minutes a /rank checkout code stays valid.
   code-ttl-minutes: 30
