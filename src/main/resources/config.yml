@@ -700,6 +700,16 @@ xray:
   alert-threshold: 3
 
 # ------------------------------------------------------------
+#  Heuristic macro/autoclicker flag, same idea as x-ray above: pings
+#  online staff, isn't proof. Two tells - sustained click rate while
+#  attacking, and repeatedly acting with zero movement/camera change
+#  (the classic sign of an unattended AFK macro). Staff/owner exempt.
+# ------------------------------------------------------------
+macro:
+  max-sustained-cps: 15
+  still-action-threshold: 80
+
+# ------------------------------------------------------------
 #  TNT spawner block, run by the plugin rather than by vanilla
 # ------------------------------------------------------------
 tnt-spawner:

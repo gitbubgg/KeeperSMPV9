@@ -23,7 +23,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "sell-everything, autoplace, deathchest, bounty, combatlog-kill, "
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
-            + "xray-guard)";
+            + "xray-guard, macro-guard)";
 
 
     private Data data;
@@ -58,6 +58,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Cosmetics cosmetics;
     private BedrockGuard bedrockGuard;
     private XrayGuard xrayGuard;
+    private MacroGuard macroGuard;
 
     @Override
     public void onEnable() {
@@ -100,6 +101,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         cosmetics = new Cosmetics(this);
         bedrockGuard = new BedrockGuard();
         xrayGuard = new XrayGuard(this);
+        macroGuard = new MacroGuard(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -148,6 +150,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(cosmetics, this);
         Bukkit.getPluginManager().registerEvents(bedrockGuard, this);
         Bukkit.getPluginManager().registerEvents(xrayGuard, this);
+        Bukkit.getPluginManager().registerEvents(macroGuard, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
