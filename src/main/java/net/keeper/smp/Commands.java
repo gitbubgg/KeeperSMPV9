@@ -126,12 +126,17 @@ public class Commands implements CommandExecutor, TabCompleter {
             }
 
             case "pay" -> pay(player, args);
+            case "sendshards" -> sendShards(player, args);
+            case "bounty" -> bounty(player, args);
+            case "trade" -> trade(player, args);
 
             case "upgrade" -> upgrade(player);
 
             case "daily" -> plugin.daily().claim(player);
             case "playtime" -> player.sendMessage(Util.text("&7Total playtime: &f"
                     + plugin.playtime().formatted(player.getUniqueId())));
+            case "baltop" -> plugin.leaderboard().balanceTop(player);
+            case "playtimetop" -> plugin.leaderboard().playtimeTop(player);
             case "gunfight" -> gunfight(player, rank, args);
 
             case "ownerkit" -> {
@@ -231,6 +236,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "afk" -> plugin.shards().toggle(player);
 
             case "shardshop" -> plugin.shards().openShop(player, 0);
+            case "cosmetics" -> plugin.gui().openCosmetics(player);
 
             case "spectator" -> {
                 if (!rank.isStaff()) return deny(sender, Rank.MOD);
@@ -374,6 +380,68 @@ public class Commands implements CommandExecutor, TabCompleter {
                 + " &afrom &f" + player.getName() + "&a."));
     }
 
+    private void sendShards(Player player, String[] args) {
+        if (args.length < 2) {
+            player.sendMessage(Util.text("&cUsage: /sendshards <player> <amount>"));
+            return;
+        }
+        Player target = target(player, args);
+        if (target == null) return;
+        if (target.equals(player)) {
+            player.sendMessage(Util.text("&cYou cannot send shards to yourself."));
+            return;
+        }
+        double parsed = Util.parseAmount(args[1]);
+        if (parsed <= 0) {
+            player.sendMessage(Util.text("&cThat is not a number. Try 500, 20k or 1.5m."));
+            return;
+        }
+        long amount = Math.round(parsed);
+        if (!plugin.shards().take(player.getUniqueId(), amount)) {
+            player.sendMessage(Util.text("&cYou do not have that many shards."));
+            return;
+        }
+        plugin.shards().give(target.getUniqueId(), amount);
+        plugin.data().save(player.getUniqueId());
+        plugin.data().save(target.getUniqueId());
+        player.sendMessage(Util.text("&aSent &b" + amount + " shards &ato &f" + target.getName() + "&a."));
+        target.sendMessage(Util.text("&aReceived &b" + amount + " shards &afrom &f" + player.getName() + "&a."));
+    }
+
+    private void bounty(Player player, String[] args) {
+        if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
+            plugin.bounty().list(player);
+            return;
+        }
+        if (args.length < 2) {
+            player.sendMessage(Util.text("&cUsage: /bounty <player> <amount> &7or &f/bounty list"));
+            return;
+        }
+        Player target = target(player, args);
+        if (target == null) return;
+        double amount = Util.parseAmount(args[1]);
+        if (amount <= 0) {
+            player.sendMessage(Util.text("&cThat is not a number. Try 500, 20k or 1.5m."));
+            return;
+        }
+        plugin.bounty().place(player, target, amount);
+    }
+
+    private void trade(Player player, String[] args) {
+        if (args.length == 0) {
+            player.sendMessage(Util.text("&cUsage: /trade <player> &7or &f/trade accept &7or &f/trade deny"));
+            return;
+        }
+        switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "accept" -> plugin.trade().accept(player);
+            case "deny" -> plugin.trade().deny(player);
+            default -> {
+                Player target = target(player, args);
+                if (target != null) plugin.trade().request(player, target);
+            }
+        }
+    }
+
     /** Upgrades the diamond item in hand to netherite, same recipe as a smithing table. */
     private void upgrade(Player player) {
         ItemStack hand = player.getInventory().getItemInMainHand();
@@ -501,11 +569,26 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "confirm", "yes" -> plugin.auction().confirm(player);
             case "cancel", "no" -> plugin.auction().cancelPending(player);
             case "mine" -> plugin.gui().openAuction(player, 0, true);
+            case "sponsor" -> {
+                if (args.length < 3) {
+                    player.sendMessage(Util.text("&cUsage: /ah sponsor <listing-id> <hours>"));
+                    return;
+                }
+                int hours;
+                try {
+                    hours = Integer.parseInt(args[2]);
+                } catch (NumberFormatException ex) {
+                    player.sendMessage(Util.text("&cHours has to be a number."));
+                    return;
+                }
+                plugin.auction().sponsor(player, args[1], hours);
+            }
             case "help" -> {
                 player.sendMessage(Util.text("&7/ah &8- browse listings"));
                 player.sendMessage(Util.text("&7/ah sell <price> &8- list the item in your main hand"));
                 player.sendMessage(Util.text("&7/ah confirm &8- confirm that listing"));
                 player.sendMessage(Util.text("&7/ah mine &8- your own listings"));
+                player.sendMessage(Util.text("&7/ah sponsor <id> <hours> &8- pin a listing to the top"));
             }
             default -> plugin.gui().openAuction(player, 0, false);
         }
@@ -697,7 +780,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         out.addAll(plugin.data().get(player.getUniqueId()).homes.keySet());
                     }
                 }
-                case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help"));
+                case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "eco" -> out.addAll(List.of("give", "take", "set"));
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");
@@ -711,7 +794,12 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "sell" -> out.add("all");
                 case "gunfight" -> out.addAll(List.of("leave", "setpos1", "setpos2"));
-                case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank", "giveshards" -> {
+                case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank", "giveshards",
+                        "sendshards", "bounty" -> {
+                    for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
+                }
+                case "trade" -> {
+                    out.addAll(List.of("accept", "deny"));
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
                 default -> {

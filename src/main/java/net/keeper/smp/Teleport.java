@@ -98,6 +98,15 @@ public class Teleport implements Listener {
         plugin.data().get(player.getUniqueId()).backLocation = Util.serialize(player.getLocation());
     }
 
+    /** Logging out mid-fight kills you on the spot instead of safely vanishing. */
+    @EventHandler
+    public void onQuit(org.bukkit.event.player.PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (inCombat(player) && player.getHealth() > 0) {
+            player.setHealth(0);
+        }
+    }
+
     // ---------------- warmup ----------------
 
     public void withWarmup(Player player, Location destination, String label) {

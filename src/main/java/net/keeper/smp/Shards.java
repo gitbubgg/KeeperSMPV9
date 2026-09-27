@@ -115,6 +115,9 @@ public class Shards implements Listener {
     /** Runs once a second. Pays out whole minutes of idling. */
     public void tick() {
         long rate = plugin.getConfig().getLong("afk.shards-per-minute", 1);
+        if (Util.isWeekend() && plugin.getConfig().getBoolean("general.weekend-bonus-enabled", true)) {
+            rate = Math.round(rate * plugin.getConfig().getDouble("general.weekend-bonus-multiplier", 2.0));
+        }
         long now = System.currentTimeMillis();
         for (UUID uuid : new ArrayList<>(afkSince.keySet())) {
             Player player = Bukkit.getPlayer(uuid);
@@ -203,6 +206,21 @@ public class Shards implements Listener {
                     + " shards &cand have &b" + Util.money(balance(player.getUniqueId())) + "&c."));
             return;
         }
+        if (item.kind().equals("pet") || item.kind().equals("trail")) {
+            Data.PlayerData data = plugin.data().get(player.getUniqueId());
+            java.util.Set<String> owned = item.kind().equals("pet") ? data.ownedPets : data.ownedTrails;
+            if (owned.contains(item.payload())) {
+                player.sendMessage(Util.text("&cYou already own that."));
+                return;
+            }
+            take(player.getUniqueId(), item.price());
+            owned.add(item.payload());
+            plugin.data().save(player.getUniqueId());
+            player.sendMessage(Util.text("&aUnlocked &f" + item.name()
+                    + "&a! Equip it with &f/cosmetics&a."));
+            openShop(player, 0);
+            return;
+        }
         ItemStack reward = build(item);
         if (reward == null) {
             player.sendMessage(Util.text("&cThat shop entry is misconfigured. Tell an admin."));
@@ -245,6 +263,9 @@ public class Shards implements Listener {
             }
             case "key" -> {
                 return plugin.crates().createKey(item.payload(), 1);
+            }
+            case "enchantbook" -> {
+                return Util.enchantBook(item.payload(), item.name());
             }
             case "excavator" -> {
                 return plugin.specialTools().createExcavator();

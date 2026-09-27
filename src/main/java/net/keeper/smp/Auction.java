@@ -22,6 +22,8 @@ public class Auction {
         public ItemStack item;
         public double price;
         public long expiry;
+        /** Epoch millis this listing stops being pinned to the top of /ah. 0 means never sponsored. */
+        public long sponsoredUntil = 0L;
     }
 
     public record Pending(ItemStack item, double price) {
@@ -139,8 +141,39 @@ public class Auction {
 
     public List<Listing> all() {
         List<Listing> list = new ArrayList<>(listings.values());
-        list.sort((a, b) -> Double.compare(a.price, b.price));
+        long now = System.currentTimeMillis();
+        list.sort((a, b) -> {
+            boolean sponsoredA = a.sponsoredUntil > now;
+            boolean sponsoredB = b.sponsoredUntil > now;
+            if (sponsoredA != sponsoredB) return sponsoredA ? -1 : 1;
+            return Double.compare(a.price, b.price);
+        });
         return list;
+    }
+
+    /** Pins a listing to the top of /ah for a while, cost scaled off the item's /sell value. */
+    public void sponsor(Player player, String id, int hours) {
+        Listing listing = listings.get(id);
+        if (listing == null || !listing.seller.equals(player.getUniqueId())) {
+            player.sendMessage(Util.text("&cThat is not one of your listings."));
+            return;
+        }
+        if (hours <= 0) {
+            player.sendMessage(Util.text("&cHours has to be above 0."));
+            return;
+        }
+        double sellValue = plugin.econ().sellValue(listing.seller, listing.sellerName, listing.item);
+        double percentPerHour = plugin.getConfig().getDouble("auction.sponsor-cost-percent-per-hour", 0.02);
+        double cost = Math.max(sellValue, listing.price) * percentPerHour * hours;
+        if (!plugin.econ().withdraw(player.getUniqueId(), cost)) {
+            player.sendMessage(Util.text("&cYou need &f" + plugin.econ().fmt(cost) + "&c."));
+            return;
+        }
+        listing.sponsoredUntil = Math.max(listing.sponsoredUntil, System.currentTimeMillis())
+                + hours * 3_600_000L;
+        save();
+        player.sendMessage(Util.text("&aSponsored for &f" + hours + "h &afor &f" + plugin.econ().fmt(cost)
+                + "&a. It shows first in &f/ah&a now."));
     }
 
     public List<Listing> mine(UUID uuid) {
@@ -279,6 +312,7 @@ public class Auction {
                 listing.item = item;
                 listing.price = yml.getDouble(path + "price");
                 listing.expiry = yml.getLong(path + "expiry");
+                listing.sponsoredUntil = yml.getLong(path + "sponsored-until", 0L);
                 listings.put(id, listing);
             }
         }
@@ -305,6 +339,7 @@ public class Auction {
             yml.set(path + "item", listing.item);
             yml.set(path + "price", listing.price);
             yml.set(path + "expiry", listing.expiry);
+            yml.set(path + "sponsored-until", listing.sponsoredUntil);
         }
         for (Map.Entry<UUID, List<ItemStack>> e : mailbox.entrySet()) {
             yml.set("mailbox." + e.getKey(), e.getValue());

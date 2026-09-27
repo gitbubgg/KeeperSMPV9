@@ -180,10 +180,16 @@ public class Gui implements Listener {
                 List<Component> lore = new ArrayList<>();
                 if (meta.hasLore() && meta.lore() != null) lore.addAll(meta.lore());
                 lore.add(Util.text("&8"));
+                if (listing.sponsoredUntil > System.currentTimeMillis()) {
+                    lore.add(Util.text("&d&lSPONSORED"));
+                }
                 lore.add(Util.text("&7Price: &a" + plugin.econ().fmt(listing.price)));
                 lore.add(Util.text("&7Seller: &f" + listing.sellerName));
                 long hours = Math.max(0, (listing.expiry - System.currentTimeMillis()) / 3_600_000L);
                 lore.add(Util.text("&7Expires in: &f" + hours + "h"));
+                if (mineOnly) {
+                    lore.add(Util.text("&8ID: &7" + listing.id + " &8(for &f/ah sponsor&8)"));
+                }
                 lore.add(Util.text("&8"));
                 lore.add(Util.text(mineOnly ? "&eClick to pull it back" : "&eClick to buy"));
                 meta.lore(lore);
@@ -345,6 +351,52 @@ public class Gui implements Listener {
         player.sendMessage(Util.text("&8&m--------------------------------"));
     }
 
+    // ---------------- cosmetics ----------------
+
+    private String pretty(String raw) {
+        StringBuilder sb = new StringBuilder();
+        for (String part : raw.toLowerCase(java.util.Locale.ROOT).split("_")) {
+            if (part.isEmpty()) continue;
+            sb.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1)).append(' ');
+        }
+        return sb.toString().trim();
+    }
+
+    public void openCosmetics(Player player) {
+        Data.PlayerData data = plugin.data().get(player.getUniqueId());
+        Inventory inv = create("cosmetics", 4, "&8Cosmetics");
+
+        inv.setItem(9, Util.tag(Util.item(Material.BARRIER, 1, "&cUnequip pet"), "cosmetic_pet", null));
+        int slot = 10;
+        for (String pet : data.ownedPets) {
+            if (slot >= 17) break;
+            boolean active = pet.equals(data.activePet);
+            Material icon = Material.matchMaterial(pet + "_SPAWN_EGG");
+            if (icon == null) icon = Material.EGG;
+            inv.setItem(slot++, Util.tag(Util.item(icon, 1, (active ? "&a" : "&f") + pretty(pet) + " &7(pet)",
+                    active ? "&aEquipped" : "&eClick to equip"), "cosmetic_pet", pet));
+        }
+
+        inv.setItem(18, Util.tag(Util.item(Material.BARRIER, 1, "&cUnequip trail"), "cosmetic_trail", null));
+        slot = 19;
+        for (String trail : data.ownedTrails) {
+            if (slot >= 26) break;
+            boolean active = trail.equals(data.activeTrail);
+            inv.setItem(slot++, Util.tag(Util.item(Material.NETHER_STAR, 1,
+                    (active ? "&a" : "&f") + pretty(trail) + " &7(trail)",
+                    active ? "&aEquipped" : "&eClick to equip"), "cosmetic_trail", trail));
+        }
+
+        if (data.ownedPets.isEmpty() && data.ownedTrails.isEmpty()) {
+            inv.setItem(13, Util.item(Material.PAPER, 1, "&7Nothing owned yet",
+                    "&7Buy pets and trails in the &bShard Shop&7."));
+        }
+        inv.setItem(31, Util.tag(Util.item(Material.AMETHYST_SHARD, 1, "&bOpen Shard Shop"),
+                "shardshop", null));
+        inv.setItem(22, Util.tag(Util.item(Material.NETHER_STAR, 1, "&eBack to menu"), "menu", null));
+        player.openInventory(inv);
+    }
+
     // ---------------- clicks ----------------
 
     @EventHandler
@@ -447,6 +499,15 @@ public class Gui implements Listener {
                 openSettings(player);
             }
             case "buyrank" -> sendCheckout(player, Rank.parse(value, Rank.KEEPER));
+            case "cosmetics" -> openCosmetics(player);
+            case "cosmetic_pet" -> {
+                plugin.cosmetics().equipPet(player, value);
+                openCosmetics(player);
+            }
+            case "cosmetic_trail" -> {
+                plugin.cosmetics().equipTrail(player, value);
+                openCosmetics(player);
+            }
             default -> {
             }
         }

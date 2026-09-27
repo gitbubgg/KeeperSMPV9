@@ -130,6 +130,20 @@ commands:
     description: Owner - toggle placing a full 3x3 platform of whatever block you place.
   giveshards:
     description: Owner - give shards to a player. /giveshards <player> <amount>
+  bounty:
+    description: Put a bounty on a player, paid to whoever kills them. /bounty <player> <amount>
+  trade:
+    description: Trade items with another player. /trade <player>, /trade accept, /trade deny
+  sendshards:
+    description: Send shards to another player. /sendshards <player> <amount>
+  baltop:
+    description: Top 10 balances on the server.
+  playtimetop:
+    description: Top 10 playtimes on the server.
+    aliases: [topplaytime]
+  cosmetics:
+    description: Equip pets and trails you've bought from the shard shop.
+    aliases: [cosmetic]
 
 permissions:
   keeper.staff.mod:

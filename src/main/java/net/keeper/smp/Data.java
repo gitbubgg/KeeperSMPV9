@@ -51,6 +51,11 @@ public class Data {
         public String lastDailyDate = null;
         public int dailyStreak = 0;
 
+        public final Set<String> ownedPets = new HashSet<>();
+        public final Set<String> ownedTrails = new HashSet<>();
+        public String activePet = null;
+        public String activeTrail = null;
+
         PlayerData(UUID uuid) {
             this.uuid = uuid;
         }
@@ -110,6 +115,10 @@ public class Data {
         data.playtimeMilestones.addAll(yml.getIntegerList("playtime-milestones"));
         data.lastDailyDate = yml.getString("daily.last-date");
         data.dailyStreak = yml.getInt("daily.streak", 0);
+        data.ownedPets.addAll(yml.getStringList("cosmetics.owned-pets"));
+        data.ownedTrails.addAll(yml.getStringList("cosmetics.owned-trails"));
+        data.activePet = yml.getString("cosmetics.active-pet");
+        data.activeTrail = yml.getString("cosmetics.active-trail");
 
         if (yml.isConfigurationSection("crate-limits")) {
             for (String key : yml.getConfigurationSection("crate-limits").getKeys(false)) {
@@ -147,6 +156,10 @@ public class Data {
         yml.set("playtime-milestones", new ArrayList<>(data.playtimeMilestones));
         yml.set("daily.last-date", data.lastDailyDate);
         yml.set("daily.streak", data.dailyStreak);
+        yml.set("cosmetics.owned-pets", new ArrayList<>(data.ownedPets));
+        yml.set("cosmetics.owned-trails", new ArrayList<>(data.ownedTrails));
+        yml.set("cosmetics.active-pet", data.activePet);
+        yml.set("cosmetics.active-trail", data.activeTrail);
         for (Map.Entry<String, String> e : data.homes.entrySet()) {
             yml.set("homes." + e.getKey(), e.getValue());
         }

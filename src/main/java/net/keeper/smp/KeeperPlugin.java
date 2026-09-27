@@ -13,14 +13,16 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-26 r20 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-27 r21 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
             + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
             + "elytra-stock, end-loot-strip, forcetpahere, shulker-shop, "
             + "nightvision-setting, nether-debris-limit, gunfight, "
             + "ownerkit, combat-teleport-fix, excavator, treefeller, "
-            + "sell-everything, autoplace)";
+            + "sell-everything, autoplace, deathchest, bounty, combatlog-kill, "
+            + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
+            + "rank-ping, sponsored-auctions, weekend-bonus)";
 
 
     private Data data;
@@ -48,6 +50,11 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Gunfight gunfight;
     private SpecialTools specialTools;
     private AutoPlace autoPlace;
+    private DeathChest deathChest;
+    private Bounty bounty;
+    private Trade trade;
+    private Leaderboard leaderboard;
+    private Cosmetics cosmetics;
 
     @Override
     public void onEnable() {
@@ -83,6 +90,11 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         gunfight = new Gunfight(this);
         specialTools = new SpecialTools(this);
         autoPlace = new AutoPlace(this);
+        deathChest = new DeathChest(this);
+        bounty = new Bounty(this);
+        trade = new Trade(this);
+        leaderboard = new Leaderboard(this);
+        cosmetics = new Cosmetics(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -93,7 +105,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 "usekey", "clearcrates",
                 "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
                 "daily", "playtime", "upgrade", "forcetpahere", "gunfight", "ownerkit", "autoplace",
-                "giveshards", "smtable"
+                "giveshards", "smtable", "bounty", "trade", "sendshards", "baltop", "playtimetop",
+                "cosmetics"
         };
         for (String name : names) {
             if (getCommand(name) == null) {
@@ -124,6 +137,10 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(gunfight, this);
         Bukkit.getPluginManager().registerEvents(specialTools, this);
         Bukkit.getPluginManager().registerEvents(autoPlace, this);
+        Bukkit.getPluginManager().registerEvents(deathChest, this);
+        Bukkit.getPluginManager().registerEvents(bounty, this);
+        Bukkit.getPluginManager().registerEvents(trade, this);
+        Bukkit.getPluginManager().registerEvents(cosmetics, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -154,6 +171,10 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 bonusInterval * 1200L, bonusInterval * 1200L);
         // personal sidebar
         Bukkit.getScheduler().runTaskTimer(this, () -> sidebar.refresh(), 100L, 100L);
+        // death chest expiry sweep
+        Bukkit.getScheduler().runTaskTimer(this, () -> deathChest.tick(), 100L, 100L);
+        // cosmetic pet following and trail particles
+        Bukkit.getScheduler().runTaskTimer(this, () -> cosmetics.tick(), 20L, 10L);
 
         getLogger().info("KeeperSMP enabled. Stripe: " + (stripe.enabled() ? "on" : "off"));
         getLogger().info("Build: " + BUILD);
@@ -169,6 +190,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         if (stash != null) stash.save();
         if (spawners != null) spawners.save();
         if (netherLimit != null) netherLimit.save();
+        if (deathChest != null) deathChest.save();
+        if (bounty != null) bounty.save();
     }
 
     public void reloadEverything() {
@@ -310,5 +333,25 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public AutoPlace autoPlace() {
         return autoPlace;
+    }
+
+    public DeathChest deathChest() {
+        return deathChest;
+    }
+
+    public Bounty bounty() {
+        return bounty;
+    }
+
+    public Trade trade() {
+        return trade;
+    }
+
+    public Leaderboard leaderboard() {
+        return leaderboard;
+    }
+
+    public Cosmetics cosmetics() {
+        return cosmetics;
     }
 }

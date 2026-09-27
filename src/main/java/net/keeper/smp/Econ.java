@@ -233,6 +233,9 @@ public class Econ implements Listener {
         if (base <= 0) return 0;
         double bonus = plugin.ranks().of(sellerId, sellerName).sellBonus;
         double value = base * stack.getAmount() * (1.0 + bonus);
+        if (Util.isWeekend() && plugin.getConfig().getBoolean("general.weekend-bonus-enabled", true)) {
+            value *= plugin.getConfig().getDouble("general.weekend-bonus-multiplier", 2.0);
+        }
         if (stack.getType() == Material.ELYTRA && elytraEnchantBonusPerLevel > 0) {
             int levels = stack.getEnchantments().values().stream().mapToInt(Integer::intValue).sum();
             value *= (1.0 + levels * elytraEnchantBonusPerLevel);

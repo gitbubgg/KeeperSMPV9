@@ -7,9 +7,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -19,6 +21,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public final class Util {
 
@@ -162,6 +165,39 @@ public final class Util {
 
     public static List<String> lines(String... s) {
         return new ArrayList<>(Arrays.asList(s));
+    }
+
+    /** True on Saturday or Sunday, the server's local clock. */
+    public static boolean isWeekend() {
+        java.time.DayOfWeek day = java.time.LocalDate.now().getDayOfWeek();
+        return day == java.time.DayOfWeek.SATURDAY || day == java.time.DayOfWeek.SUNDAY;
+    }
+
+    /**
+     * Parses "NAME:LEVEL,NAME:LEVEL" (vanilla enchant keys, any level) into an
+     * enchanted book. Unknown enchant names or unparsable levels are skipped.
+     */
+    public static ItemStack enchantBook(String spec, String displayName) {
+        ItemStack book = new ItemStack(Material.ENCHANTED_BOOK);
+        if (book.getItemMeta() instanceof EnchantmentStorageMeta storage) {
+            for (String part : spec.split(",")) {
+                String[] pieces = part.split(":");
+                if (pieces.length != 2) continue;
+                Enchantment enchant = Enchantment.getByKey(
+                        NamespacedKey.minecraft(pieces[0].trim().toLowerCase(Locale.ROOT)));
+                if (enchant == null) continue;
+                int level;
+                try {
+                    level = Integer.parseInt(pieces[1].trim());
+                } catch (NumberFormatException ex) {
+                    continue;
+                }
+                storage.addStoredEnchant(enchant, level, true);
+            }
+            if (displayName != null) storage.displayName(text(displayName));
+            book.setItemMeta(storage);
+        }
+        return book;
     }
 
     /** Permanent, particle-free night vision, on or off, for the /settings toggle. */

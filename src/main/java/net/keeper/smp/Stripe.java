@@ -4,7 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -183,6 +185,13 @@ public class Stripe {
                         + " from Stripe session " + id);
                 Bukkit.broadcast(Util.text("&6[Ranks] &f" + pending.name()
                         + " &7just picked up " + rank.display + "&7. Thank you."));
+
+                Player buyer = Bukkit.getPlayer(pending.uuid());
+                if (buyer != null) {
+                    buyer.playSound(buyer.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 1f);
+                    buyer.showTitle(Title.title(Util.text("&6Rank Delivered!"),
+                            Util.text("&f" + rank.display + " &7is now yours")));
+                }
             });
             saveState();
         }

@@ -20,6 +20,16 @@ general:
   # extra fraction of an elytra's /sell price added per total enchantment
   # level on it (e.g. Unbreaking III + Mending I = 4 levels).
   elytra-enchant-bonus-per-level: 0.1
+  # Doubles /sell payouts and /afk shard income every Saturday/Sunday
+  # (server's local clock).
+  weekend-bonus-enabled: true
+  weekend-bonus-multiplier: 2.0
+
+auction:
+  # Cost to sponsor a listing (pin it to the top of /ah) is this fraction of
+  # the item's guaranteed /sell value (or the listing price if higher),
+  # multiplied by however many hours you sponsor it for.
+  sponsor-cost-percent-per-hour: 0.02
 
 stripe:
   enabled: true
@@ -471,6 +481,69 @@ shardshop:
     lore:
       - '&7Break one log and the whole connected'
       - '&7tree comes down with it.'
+  SHARPNESS_BOOK:
+    icon: ENCHANTED_BOOK
+    name: '&cSharpness X Book'
+    price: 8000
+    kind: enchantbook
+    payload: 'SHARPNESS:10'
+    lore: ['&7Way past the vanilla max of V.']
+  PROTECTION_BOOK:
+    icon: ENCHANTED_BOOK
+    name: '&9Protection X Book'
+    price: 7000
+    kind: enchantbook
+    payload: 'PROTECTION:10'
+    lore: ['&7Way past the vanilla max of IV.']
+  EFFICIENCY_BOOK:
+    icon: ENCHANTED_BOOK
+    name: '&bEfficiency X Book'
+    price: 6000
+    kind: enchantbook
+    payload: 'EFFICIENCY:10'
+    lore: ['&7Way past the vanilla max of V.']
+  PET_WOLF:
+    icon: BONE
+    name: '&fWolf Pet'
+    price: 4000
+    kind: pet
+    payload: 'WOLF'
+    lore: ['&7A cosmetic companion that follows you.', '&8Equip it in &f/cosmetics&8.']
+  PET_CAT:
+    icon: COD
+    name: '&fCat Pet'
+    price: 4000
+    kind: pet
+    payload: 'CAT'
+    lore: ['&7A cosmetic companion that follows you.', '&8Equip it in &f/cosmetics&8.']
+  PET_ALLAY:
+    icon: AMETHYST_SHARD
+    name: '&dAllay Pet'
+    price: 6000
+    kind: pet
+    payload: 'ALLAY'
+    lore: ['&7A cosmetic companion that follows you.', '&8Equip it in &f/cosmetics&8.']
+  TRAIL_FLAME:
+    icon: BLAZE_POWDER
+    name: '&6Flame Trail'
+    price: 3500
+    kind: trail
+    payload: 'FLAME'
+    lore: ['&7Leaves a trail as you walk.', '&8Equip it in &f/cosmetics&8.']
+  TRAIL_HEART:
+    icon: POPPY
+    name: '&dHeart Trail'
+    price: 3500
+    kind: trail
+    payload: 'HEART'
+    lore: ['&7Leaves a trail as you walk.', '&8Equip it in &f/cosmetics&8.']
+  TRAIL_CLOUD:
+    icon: WHITE_WOOL
+    name: '&fCloud Trail'
+    price: 3500
+    kind: trail
+    payload: 'CLOUD'
+    lore: ['&7Leaves a trail as you walk.', '&8Equip it in &f/cosmetics&8.']
 
 # ------------------------------------------------------------
 #  Crates  -  the KEY decides the loot, not the crate block.
@@ -608,6 +681,13 @@ protection:
   # No PvP damage between players while either one is inside the protected
   # circle (which follows /setlobby, since that also moves world spawn).
   disable-pvp: true
+
+# ------------------------------------------------------------
+#  Death drops go into a chest at the death spot instead of scattering.
+#  Only the owner (or staff) can open it until it expires.
+# ------------------------------------------------------------
+deathchest:
+  minutes: 10
 
 # ------------------------------------------------------------
 #  TNT spawner block, run by the plugin rather than by vanilla
