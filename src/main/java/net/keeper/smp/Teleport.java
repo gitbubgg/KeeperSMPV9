@@ -14,6 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -202,8 +203,37 @@ public class Teleport implements Listener {
 
     // ---------------- random teleport ----------------
 
-    public void rtp(Player player) {
+    public void rtp(Player player, String[] args) {
         if (blockedByCombat(player)) return;
+        String arg = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "overworld";
+
+        World target;
+        String label;
+        boolean nether = false;
+        switch (arg) {
+            case "nether" -> {
+                target = dimension("general.rtp-nether-worlds", World.Environment.NETHER);
+                label = "the Nether";
+                nether = true;
+            }
+            case "end", "the_end" -> {
+                target = dimension("general.rtp-end-worlds", World.Environment.THE_END);
+                label = "the End";
+            }
+            case "overworld", "world" -> {
+                target = world();
+                label = "the wild";
+            }
+            default -> {
+                player.sendMessage(Util.text("&cUsage: &f/rtp &7[nether|end]"));
+                return;
+            }
+        }
+        if (target == null) {
+            player.sendMessage(Util.text("&cThat dimension isn't loaded on this server."));
+            return;
+        }
+
         Data.PlayerData data = plugin.data().get(player.getUniqueId());
         int cooldown = plugin.ranks().of(player).rtpCooldown;
         long since = (System.currentTimeMillis() - data.lastRtp) / 1000;
@@ -212,14 +242,30 @@ public class Teleport implements Listener {
             return;
         }
         player.sendMessage(Util.text("&7Looking for somewhere to drop you..."));
-        findSafe(world(), 24).thenAccept(location -> Bukkit.getScheduler().runTask(plugin, () -> {
+        World finalTarget = target;
+        CompletableFuture<Location> future = nether
+                ? findSafeNether(finalTarget, 40)
+                : findSafe(finalTarget, arg.equals("end") || arg.equals("the_end") ? 60 : 24);
+        future.thenAccept(location -> Bukkit.getScheduler().runTask(plugin, () -> {
             if (location == null) {
                 player.sendMessage(Util.text("&cCould not find a safe spot. Try again."));
                 return;
             }
             data.lastRtp = System.currentTimeMillis();
-            withWarmup(player, location, "the wild");
+            withWarmup(player, location, label);
         }));
+    }
+
+    /** Looks up a configured world list first, falling back to the first loaded world of that environment. */
+    private World dimension(String configPath, World.Environment environment) {
+        for (String name : plugin.getConfig().getStringList(configPath)) {
+            World world = Bukkit.getWorld(name);
+            if (world != null) return world;
+        }
+        for (World world : Bukkit.getWorlds()) {
+            if (world.getEnvironment() == environment) return world;
+        }
+        return null;
     }
 
     public void rtpQueue(Player player) {
@@ -298,6 +344,61 @@ public class Teleport implements Listener {
             attempt(world, left - 1, result);
             return null;
         });
+    }
+
+    /**
+     * The Nether has a solid bedrock roof, so surface-scan logic would just
+     * drop everyone on top of it. Instead scan down each column for the
+     * first 2-block air pocket over safe, non-lava ground.
+     */
+    private CompletableFuture<Location> findSafeNether(World world, int attempts) {
+        CompletableFuture<Location> result = new CompletableFuture<>();
+        attemptNether(world, attempts, result);
+        return result;
+    }
+
+    private void attemptNether(World world, int left, CompletableFuture<Location> result) {
+        if (left <= 0) {
+            result.complete(null);
+            return;
+        }
+        int max = plugin.getConfig().getInt("general.rtp-nether-radius", 3000);
+        int min = plugin.getConfig().getInt("general.rtp-nether-min-radius", 100);
+        int x = pick(min, max);
+        int z = pick(min, max);
+        world.getChunkAtAsync(x >> 4, z >> 4).thenAccept(chunk -> {
+            Location found = netherPocket(world, x, z);
+            if (found != null) {
+                result.complete(found);
+            } else {
+                attemptNether(world, left - 1, result);
+            }
+        }).exceptionally(ex -> {
+            attemptNether(world, left - 1, result);
+            return null;
+        });
+    }
+
+    private Location netherPocket(World world, int x, int z) {
+        int top = Math.min(world.getMaxHeight() - 3, 120);
+        int bottom = world.getMinHeight() + 5;
+        for (int y = top; y >= bottom; y--) {
+            Material floor = world.getBlockAt(x, y, z).getType();
+            if (!floor.isSolid() || isUnsafe(floor)) continue;
+            Material feet = world.getBlockAt(x, y + 1, z).getType();
+            Material head = world.getBlockAt(x, y + 2, z).getType();
+            if (feet.isAir() && head.isAir()) {
+                return new Location(world, x + 0.5, y + 1, z + 0.5);
+            }
+        }
+        return null;
+    }
+
+    private boolean isUnsafe(Material material) {
+        for (Material bad : UNSAFE) {
+            if (material == bad) return true;
+        }
+        return false;
     }
 
     private int pick(int min, int max) {

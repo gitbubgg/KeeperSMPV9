@@ -13,7 +13,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * Bumped whenever features change, so /keeper status and the startup log
      * say plainly which build is actually running.
      */
-    public static final String BUILD = "2026-09-27 r21 (barriers, protect, tier-crates, "
+    public static final String BUILD = "2026-09-27 r22 (barriers, protect, tier-crates, "
             + "daily-caps, tnt-spawner, lobby, value, rank-tags, crate-nametags, "
             + "crate-spawnprotect-fix, daily-streaks, playtime-milestones, "
             + "bonus-events, sidebar, netherite-upgrade, elytra-shop, "
@@ -23,7 +23,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "sell-everything, autoplace, deathchest, bounty, combatlog-kill, "
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
-            + "xray-guard, macro-guard)";
+            + "xray-guard, macro-guard, rtp-nether-end, more-spawners)";
 
 
     private Data data;

@@ -28,7 +28,7 @@ commands:
   homes:
     description: List your homes.
   rtp:
-    description: Teleport somewhere random.
+    description: Teleport somewhere random. Use /rtp nether or /rtp end for those dimensions.
     aliases: [wild]
   rtpq:
     description: Join the random PvP drop queue.

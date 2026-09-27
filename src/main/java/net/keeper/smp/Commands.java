@@ -159,7 +159,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "delhome" -> plugin.homes().delete(player, args.length > 0 ? args[0] : null);
             case "homes" -> plugin.homes().list(player);
 
-            case "rtp" -> plugin.teleport().rtp(player);
+            case "rtp" -> plugin.teleport().rtp(player, args);
             case "rtpq" -> plugin.teleport().rtpQueue(player);
             case "back" -> plugin.teleport().back(player);
 
@@ -781,6 +781,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     }
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
+                case "rtp" -> out.addAll(List.of("nether", "end"));
                 case "eco" -> out.addAll(List.of("give", "take", "set"));
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");

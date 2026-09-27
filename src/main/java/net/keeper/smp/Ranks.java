@@ -1,10 +1,13 @@
 package net.keeper.smp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -147,5 +150,22 @@ public class Ranks implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         plugin.data().unload(event.getPlayer().getUniqueId());
+    }
+
+    /**
+     * The persistent night vision setting only ever gets (re)applied on
+     * join, but vanilla wipes it right back off on a totem pop, on death,
+     * and as a side effect of some other potion effects changing. Put it
+     * straight back the instant it disappears on anyone who has it toggled on.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onPotionEffectChange(EntityPotionEffectEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (!plugin.data().get(player.getUniqueId()).nightVision) return;
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (player.isOnline() && !player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
+                Util.nightVision(player, true);
+            }
+        });
     }
 }

@@ -9,6 +9,13 @@ general:
   rtp-worlds: [world]
   rtp-radius: 5000
   rtp-min-radius: 250
+  # Leave the *-worlds lists empty to auto-detect by dimension type instead.
+  rtp-nether-worlds: [world_nether]
+  rtp-nether-radius: 3000
+  rtp-nether-min-radius: 100
+  rtp-end-worlds: [world_the_end]
+  rtp-end-radius: 200
+  rtp-end-min-radius: 20
   combat-tag-seconds: 20
   # Kill hostile mobs that wander into chunks where everyone nearby has
   # mob spawning switched off.
@@ -392,9 +399,112 @@ shardshop:
     price: 7500
     kind: spawner
     payload: SKELETON
-    lore:
-      - '&7Place it down and it works like a'
-      - '&7natural skeleton spawner.'
+    lore: ['&7Place it down and it works like a natural spawner.']
+  ZOMBIE_SPAWNER:
+    icon: SPAWNER
+    name: '&2Zombie Spawner'
+    price: 6000
+    kind: spawner
+    payload: ZOMBIE
+    lore: ['&7Place it down and it works like a natural spawner.']
+  SPIDER_SPAWNER:
+    icon: SPAWNER
+    name: '&8Spider Spawner'
+    price: 6500
+    kind: spawner
+    payload: SPIDER
+    lore: ['&7Place it down and it works like a natural spawner.']
+  CAVE_SPIDER_SPAWNER:
+    icon: SPAWNER
+    name: '&3Cave Spider Spawner'
+    price: 7000
+    kind: spawner
+    payload: CAVE_SPIDER
+    lore: ['&7Place it down and it works like a natural spawner.']
+  DROWNED_SPAWNER:
+    icon: SPAWNER
+    name: '&bDrowned Spawner'
+    price: 8000
+    kind: spawner
+    payload: DROWNED
+    lore: ['&7Place it down and it works like a natural spawner.']
+  CREEPER_SPAWNER:
+    icon: SPAWNER
+    name: '&aCreeper Spawner'
+    price: 9000
+    kind: spawner
+    payload: CREEPER
+    lore: ['&7Place it down and it works like a natural spawner.']
+  WITCH_SPAWNER:
+    icon: SPAWNER
+    name: '&5Witch Spawner'
+    price: 9500
+    kind: spawner
+    payload: WITCH
+    lore: ['&7Place it down and it works like a natural spawner.']
+  PIGLIN_SPAWNER:
+    icon: SPAWNER
+    name: '&6Piglin Spawner'
+    price: 9500
+    kind: spawner
+    payload: PIGLIN
+    lore: ['&7Place it down and it works like a natural spawner.']
+  MAGMA_CUBE_SPAWNER:
+    icon: SPAWNER
+    name: '&cMagma Cube Spawner'
+    price: 10000
+    kind: spawner
+    payload: MAGMA_CUBE
+    lore: ['&7Place it down and it works like a natural spawner.']
+  BLAZE_SPAWNER:
+    icon: SPAWNER
+    name: '&eBlaze Spawner'
+    price: 12000
+    kind: spawner
+    payload: BLAZE
+    lore: ['&7Place it down and it works like a natural spawner.']
+  ENDERMAN_SPAWNER:
+    icon: SPAWNER
+    name: '&dEnderman Spawner'
+    price: 11000
+    kind: spawner
+    payload: ENDERMAN
+    lore: ['&7Place it down and it works like a natural spawner.']
+  COW_SPAWNER:
+    icon: SPAWNER
+    name: '&fCow Spawner'
+    price: 4000
+    kind: spawner
+    payload: COW
+    lore: ['&7Place it down and it works like a natural spawner.']
+  PIG_SPAWNER:
+    icon: SPAWNER
+    name: '&dPig Spawner'
+    price: 3500
+    kind: spawner
+    payload: PIG
+    lore: ['&7Place it down and it works like a natural spawner.']
+  SHEEP_SPAWNER:
+    icon: SPAWNER
+    name: '&fSheep Spawner'
+    price: 3500
+    kind: spawner
+    payload: SHEEP
+    lore: ['&7Place it down and it works like a natural spawner.']
+  CHICKEN_SPAWNER:
+    icon: SPAWNER
+    name: '&fChicken Spawner'
+    price: 3000
+    kind: spawner
+    payload: CHICKEN
+    lore: ['&7Place it down and it works like a natural spawner.']
+  RABBIT_SPAWNER:
+    icon: SPAWNER
+    name: '&fRabbit Spawner'
+    price: 3000
+    kind: spawner
+    payload: RABBIT
+    lore: ['&7Place it down and it works like a natural spawner.']
   TNT_SPAWNER:
     icon: TNT
     name: '&cTNT Spawner'
