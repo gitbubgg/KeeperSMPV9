@@ -498,11 +498,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
     private void ownerKit(Player player, boolean legacy, long axeSharpnessRequested) {
-        // 255 is a hard, engine-enforced ceiling on enchant level (Paper's own
-        // ItemEnchantments builder throws IllegalArgumentException past it,
-        // legacy addUnsafeEnchantment silently clamps to it) - not a plugin
-        // limit, so there's no API-level way to store a higher level.
-        int axeSharpness = (int) Math.min(axeSharpnessRequested, 255);
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
@@ -515,9 +510,16 @@ public class Commands implements CommandExecutor, TabCompleter {
         ItemMeta axeMeta = axe.getItemMeta();
         axeMeta.displayName(Util.text("&5Owner's Axe"));
         axe.setItemMeta(axeMeta);
-        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, axeSharpness);
+        // 5 is the normal kit's baseline; a real Sharpness enchant is capped
+        // at 255 by Paper itself regardless of what's asked for, so anything
+        // higher rides as a Mega Sharpness bonus instead (see MegaSharpness) -
+        // an uncapped, plugin-tracked damage bonus, not a real enchant level.
+        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
         axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
         axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
+        if (axeSharpnessRequested > 5) {
+            axe = plugin.megaSharpness().apply(axe, axeSharpnessRequested);
+        }
 
         ItemStack elytra = new ItemStack(Material.ELYTRA);
         elytra.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
@@ -548,10 +550,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
         player.sendMessage(Util.text("&8&m----------------------------"));
         player.sendMessage(Util.text(" &5&lOWNER KIT &7given."));
-        if (axeSharpnessRequested > 255) {
-            player.sendMessage(Util.text(" &7Sharpness capped at &f" + axeSharpness
-                    + " &7- 255 is the game's actual max enchant level, not something this plugin can raise."));
-        }
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
 
