@@ -1,5 +1,7 @@
 package net.keeper.smp;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -506,9 +508,19 @@ public class Commands implements CommandExecutor, TabCompleter {
         ItemMeta axeMeta = axe.getItemMeta();
         axeMeta.displayName(Util.text("&5Owner's Axe"));
         axe.setItemMeta(axeMeta);
-        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, axeSharpness);
-        axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
-        axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
+        if (axeSharpness > 255) {
+            // ItemMeta#addEnchant (and addUnsafeEnchantment) silently clamps the
+            // level to 255. The data component API stores the raw int instead.
+            axe.setData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments()
+                    .add(Enchantment.SHARPNESS, axeSharpness)
+                    .add(Enchantment.UNBREAKING, 3)
+                    .add(Enchantment.MENDING, 1)
+                    .build());
+        } else {
+            axe.addUnsafeEnchantment(Enchantment.SHARPNESS, axeSharpness);
+            axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
+            axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
+        }
 
         ItemStack elytra = new ItemStack(Material.ELYTRA);
         elytra.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
