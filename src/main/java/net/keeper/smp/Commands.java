@@ -142,7 +142,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "ownerkit" -> {
                 if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
                 if (plugin.teleport().blockedByCombat(player)) return true;
-                ownerKit(player);
+                ownerKit(player, args.length > 0 && args[0].equals("1"));
             }
 
             case "autoplace" -> {
@@ -490,13 +490,13 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
-    private void ownerKit(Player player) {
+    private void ownerKit(Player player, boolean legacy) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
-                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6),
-                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6),
-                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6),
-                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6)
+                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
+                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6, legacy),
+                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6, legacy),
+                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6, legacy)
         });
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
@@ -539,11 +539,11 @@ public class Commands implements CommandExecutor, TabCompleter {
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
 
-    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level) {
+    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level, boolean legacy) {
         ItemStack stack = new ItemStack(material);
         stack.addUnsafeEnchantment(mainEnchant, level);
-        stack.addUnsafeEnchantment(Enchantment.UNBREAKING, 50);
-        stack.addUnsafeEnchantment(Enchantment.BLAST_PROTECTION, 6);
+        stack.addUnsafeEnchantment(Enchantment.UNBREAKING, legacy ? 3 : 50);
+        if (!legacy) stack.addUnsafeEnchantment(Enchantment.BLAST_PROTECTION, 6);
         stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
         stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
         return stack;
@@ -783,6 +783,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "rtp" -> out.addAll(List.of("nether", "end"));
+                case "ownerkit" -> out.add("1");
                 case "eco" -> out.addAll(List.of("give", "take", "set"));
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");
