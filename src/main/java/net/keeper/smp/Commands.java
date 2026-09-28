@@ -142,7 +142,10 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "ownerkit" -> {
                 if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
                 if (plugin.teleport().blockedByCombat(player)) return true;
-                ownerKit(player, args.length > 0 && args[0].equals("1"));
+                String variant = args.length > 0 ? args[0] : "";
+                boolean legacy = variant.equals("1");
+                int axeSharpness = variant.equals("503") ? 3000 : 5;
+                ownerKit(player, legacy, axeSharpness);
             }
 
             case "autoplace" -> {
@@ -490,7 +493,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
-    private void ownerKit(Player player, boolean legacy) {
+    private void ownerKit(Player player, boolean legacy, int axeSharpness) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
@@ -503,7 +506,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         ItemMeta axeMeta = axe.getItemMeta();
         axeMeta.displayName(Util.text("&5Owner's Axe"));
         axe.setItemMeta(axeMeta);
-        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
+        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, axeSharpness);
         axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
         axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
 
@@ -783,7 +786,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "rtp" -> out.addAll(List.of("nether", "end"));
-                case "ownerkit" -> out.add("1");
+                case "ownerkit" -> out.addAll(List.of("1", "503"));
                 case "eco" -> out.addAll(List.of("give", "take", "set"));
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");
