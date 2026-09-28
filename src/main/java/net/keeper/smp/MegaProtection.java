@@ -20,17 +20,15 @@ import java.util.Locale;
  * real Enchantment (capped at 255 by Paper regardless of what the
  * enchantment itself declares as its max level). Reduces incoming damage
  * by a percentage summed across every worn piece that carries the tag,
- * clamped to a configurable ceiling so a huge level can't zero out damage
- * entirely - nobody becomes flat-out unkillable, same spirit as
- * MegaSharpness's damage cap.
+ * uncapped - a high enough level really does block essentially all damage.
+ * Damage is still floored at 0 rather than going negative, since negative
+ * damage would heal the wearer instead of doing nothing.
  */
 public class MegaProtection implements Listener {
 
-    private final KeeperPlugin plugin;
     private final NamespacedKey key;
 
     public MegaProtection(KeeperPlugin plugin) {
-        this.plugin = plugin;
         this.key = new NamespacedKey(plugin, "mega_protection");
     }
 
@@ -62,8 +60,7 @@ public class MegaProtection implements Listener {
             total += levelOf(piece);
         }
         if (total <= 0) return;
-        double capPercent = plugin.getConfig().getDouble("mega-enchants.protection-max-percent", 0.9);
-        double percent = Math.min(total * 0.05, capPercent);
-        event.setDamage(event.getDamage() * (1 - percent));
+        double percent = total * 0.05;
+        event.setDamage(Math.max(0, event.getDamage() * (1 - percent)));
     }
 }

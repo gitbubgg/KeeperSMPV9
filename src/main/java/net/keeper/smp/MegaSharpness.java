@@ -22,16 +22,14 @@ import java.util.Locale;
  * that entirely: the "level" is just a plain long tagged onto the item via
  * PersistentDataContainer, shown as a fake enchant line in the lore, and
  * applied as bonus melee damage using the same formula vanilla Sharpness
- * uses (extra damage = level * 0.5 + 0.5), clamped to a configurable
- * ceiling so an absurd level is a cosmetic flex, not an actual one-shot.
+ * uses (extra damage = level * 0.5 + 0.5), uncapped - a level like 3 billion
+ * really does one-shot anything.
  */
 public class MegaSharpness implements Listener {
 
-    private final KeeperPlugin plugin;
     private final NamespacedKey key;
 
     public MegaSharpness(KeeperPlugin plugin) {
-        this.plugin = plugin;
         this.key = new NamespacedKey(plugin, "mega_sharpness");
     }
 
@@ -60,7 +58,6 @@ public class MegaSharpness implements Listener {
         if (!(event.getDamager() instanceof Player player)) return;
         long level = levelOf(player.getInventory().getItemInMainHand());
         if (level <= 0) return;
-        double maxBonus = plugin.getConfig().getDouble("mega-enchants.sharpness-max-damage", 15.0);
-        event.setDamage(event.getDamage() + Math.min(level * 0.5 + 0.5, maxBonus));
+        event.setDamage(event.getDamage() + level * 0.5 + 0.5);
     }
 }

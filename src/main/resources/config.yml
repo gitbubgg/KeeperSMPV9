@@ -820,16 +820,6 @@ macro:
   still-action-threshold: 80
 
 # ------------------------------------------------------------
-#  Mega Sharpness/Protection: uncapped-level stand-ins for Sharpness and
-#  Protection (real enchant levels are hard-capped at 255 by the game
-#  itself). Both are clamped here so an absurd level is a flex, not a
-#  literal one-shot-kill or full invulnerability.
-# ------------------------------------------------------------
-mega-enchants:
-  sharpness-max-damage: 15.0
-  protection-max-percent: 0.9
-
-# ------------------------------------------------------------
 #  TNT spawner block, run by the plugin rather than by vanilla
 # ------------------------------------------------------------
 tnt-spawner:
