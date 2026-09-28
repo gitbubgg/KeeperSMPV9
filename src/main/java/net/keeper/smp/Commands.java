@@ -146,7 +146,11 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (plugin.teleport().blockedByCombat(player)) return true;
                 String variant = args.length > 0 ? args[0] : "";
                 boolean legacy = variant.equals("1");
-                int axeSharpness = variant.equals("503") ? 3000 : 5;
+                long axeSharpness = switch (variant) {
+                    case "503" -> 3000L;
+                    case "709" -> 3_000_000_000L;
+                    default -> 5L;
+                };
                 ownerKit(player, legacy, axeSharpness);
             }
 
@@ -495,7 +499,9 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
-    private void ownerKit(Player player, boolean legacy, int axeSharpness) {
+    private void ownerKit(Player player, boolean legacy, long axeSharpnessRequested) {
+        // An enchant level is a 32-bit int under the hood; 3 billion doesn't fit, so cap it there.
+        int axeSharpness = (int) Math.min(axeSharpnessRequested, Integer.MAX_VALUE);
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
@@ -551,6 +557,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 
         player.sendMessage(Util.text("&8&m----------------------------"));
         player.sendMessage(Util.text(" &5&lOWNER KIT &7given."));
+        if (axeSharpnessRequested > Integer.MAX_VALUE) {
+            player.sendMessage(Util.text(" &7Sharpness capped at &f" + axeSharpness
+                    + " &7(an enchant level is a 32-bit int, it can't hold " + axeSharpnessRequested + ")."));
+        }
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
 
@@ -798,7 +808,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "rtp" -> out.addAll(List.of("nether", "end"));
-                case "ownerkit" -> out.addAll(List.of("1", "503"));
+                case "ownerkit" -> out.addAll(List.of("1", "503", "709"));
                 case "eco" -> out.addAll(List.of("give", "take", "set"));
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");

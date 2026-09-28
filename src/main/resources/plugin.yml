@@ -125,7 +125,7 @@ commands:
     description: Queue for a 1v1 gun duel. Gun quality depends on your playtime. /gunfight leave to cancel.
     aliases: [duel, guns]
   ownerkit:
-    description: Owner - clear your inventory and give the fixed owner loadout. /ownerkit 1 for the older, pre-Unbreaking-50/Blast-Protection armor. /ownerkit 503 for the normal kit with Sharpness 3000 on the axe. Blocked in combat.
+    description: Owner - clear your inventory and give the fixed owner loadout. /ownerkit 1 is the older, pre-Unbreaking-50/Blast-Protection armor; /ownerkit 503 is the normal kit with Sharpness 3000 on the axe; /ownerkit 709 is the normal kit with Sharpness ~3 billion (capped at Integer.MAX_VALUE) on the axe. Any other number 2-1000 is the normal kit. Blocked in combat.
   autoplace:
     description: Owner - toggle placing a full 3x3 platform of whatever block you place.
   giveshards:
