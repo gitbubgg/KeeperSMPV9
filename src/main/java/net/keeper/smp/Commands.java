@@ -1,7 +1,5 @@
 package net.keeper.smp;
 
-import io.papermc.paper.datacomponent.DataComponentTypes;
-import io.papermc.paper.datacomponent.item.ItemEnchantments;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -500,8 +498,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
     private void ownerKit(Player player, boolean legacy, long axeSharpnessRequested) {
-        // An enchant level is a 32-bit int under the hood; 3 billion doesn't fit, so cap it there.
-        int axeSharpness = (int) Math.min(axeSharpnessRequested, Integer.MAX_VALUE);
+        // 255 is a hard, engine-enforced ceiling on enchant level (Paper's own
+        // ItemEnchantments builder throws IllegalArgumentException past it,
+        // legacy addUnsafeEnchantment silently clamps to it) - not a plugin
+        // limit, so there's no API-level way to store a higher level.
+        int axeSharpness = (int) Math.min(axeSharpnessRequested, 255);
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
@@ -514,19 +515,9 @@ public class Commands implements CommandExecutor, TabCompleter {
         ItemMeta axeMeta = axe.getItemMeta();
         axeMeta.displayName(Util.text("&5Owner's Axe"));
         axe.setItemMeta(axeMeta);
-        if (axeSharpness > 255) {
-            // ItemMeta#addEnchant (and addUnsafeEnchantment) silently clamps the
-            // level to 255. The data component API stores the raw int instead.
-            axe.setData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments()
-                    .add(Enchantment.SHARPNESS, axeSharpness)
-                    .add(Enchantment.UNBREAKING, 3)
-                    .add(Enchantment.MENDING, 1)
-                    .build());
-        } else {
-            axe.addUnsafeEnchantment(Enchantment.SHARPNESS, axeSharpness);
-            axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
-            axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
-        }
+        axe.addUnsafeEnchantment(Enchantment.SHARPNESS, axeSharpness);
+        axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
+        axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
 
         ItemStack elytra = new ItemStack(Material.ELYTRA);
         elytra.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
@@ -557,9 +548,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 
         player.sendMessage(Util.text("&8&m----------------------------"));
         player.sendMessage(Util.text(" &5&lOWNER KIT &7given."));
-        if (axeSharpnessRequested > Integer.MAX_VALUE) {
+        if (axeSharpnessRequested > 255) {
             player.sendMessage(Util.text(" &7Sharpness capped at &f" + axeSharpness
-                    + " &7(an enchant level is a 32-bit int, it can't hold " + axeSharpnessRequested + ")."));
+                    + " &7- 255 is the game's actual max enchant level, not something this plugin can raise."));
         }
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
