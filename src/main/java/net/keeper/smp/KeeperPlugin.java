@@ -23,7 +23,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "sell-everything, autoplace, deathchest, bounty, combatlog-kill, "
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
-            + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness)";
+            + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
+            + "mega-protection)";
 
 
     private Data data;
@@ -60,6 +61,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private XrayGuard xrayGuard;
     private MacroGuard macroGuard;
     private MegaSharpness megaSharpness;
+    private MegaProtection megaProtection;
 
     @Override
     public void onEnable() {
@@ -104,6 +106,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         xrayGuard = new XrayGuard(this);
         macroGuard = new MacroGuard(this);
         megaSharpness = new MegaSharpness(this);
+        megaProtection = new MegaProtection(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -154,6 +157,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(xrayGuard, this);
         Bukkit.getPluginManager().registerEvents(macroGuard, this);
         Bukkit.getPluginManager().registerEvents(megaSharpness, this);
+        Bukkit.getPluginManager().registerEvents(megaProtection, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -370,5 +374,9 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public MegaSharpness megaSharpness() {
         return megaSharpness;
+    }
+
+    public MegaProtection megaProtection() {
+        return megaProtection;
     }
 }

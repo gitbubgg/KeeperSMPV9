@@ -560,6 +560,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         if (!legacy) stack.addUnsafeEnchantment(Enchantment.BLAST_PROTECTION, 6);
         stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
         stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
+        if (!legacy) stack = plugin.megaProtection().apply(stack, 1000);
         return stack;
     }
 
