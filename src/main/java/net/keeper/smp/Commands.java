@@ -543,6 +543,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         ItemStack stack = new ItemStack(material);
         stack.addUnsafeEnchantment(mainEnchant, level);
         stack.addUnsafeEnchantment(Enchantment.UNBREAKING, 50);
+        stack.addUnsafeEnchantment(Enchantment.BLAST_PROTECTION, 6);
         stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
         stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
         return stack;
