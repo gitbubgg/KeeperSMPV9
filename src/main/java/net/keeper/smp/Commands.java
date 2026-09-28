@@ -149,7 +149,8 @@ public class Commands implements CommandExecutor, TabCompleter {
                     case "709" -> 3_000_000_000L;
                     default -> 5L;
                 };
-                ownerKit(player, legacy, axeSharpness);
+                long armorProtection = variant.equals("709") ? 3_000_000_000L : 1000L;
+                ownerKit(player, legacy, axeSharpness, armorProtection);
             }
 
             case "autoplace" -> {
@@ -497,13 +498,13 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
-    private void ownerKit(Player player, boolean legacy, long axeSharpnessRequested) {
+    private void ownerKit(Player player, boolean legacy, long axeSharpnessRequested, long armorProtectionLevel) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
-                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
-                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6, legacy),
-                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6, legacy),
-                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6, legacy)
+                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy, armorProtectionLevel),
+                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6, legacy, armorProtectionLevel),
+                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6, legacy, armorProtectionLevel),
+                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6, legacy, armorProtectionLevel)
         });
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
@@ -553,14 +554,15 @@ public class Commands implements CommandExecutor, TabCompleter {
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
 
-    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level, boolean legacy) {
+    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level, boolean legacy,
+                                      long megaProtectionLevel) {
         ItemStack stack = new ItemStack(material);
         stack.addUnsafeEnchantment(mainEnchant, level);
         stack.addUnsafeEnchantment(Enchantment.UNBREAKING, legacy ? 3 : 50);
         if (!legacy) stack.addUnsafeEnchantment(Enchantment.BLAST_PROTECTION, 6);
         stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
         stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
-        if (!legacy) stack = plugin.megaProtection().apply(stack, 1000);
+        if (!legacy) stack = plugin.megaProtection().apply(stack, megaProtectionLevel);
         return stack;
     }
 
