@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -81,6 +82,20 @@ public class DeathChest implements Listener {
         if (player.getUniqueId().equals(entry.owner()) || plugin.ranks().of(player).isStaff()) return;
         event.setCancelled(true);
         player.sendMessage(Util.text("&cThat death chest belongs to &f" + entry.ownerName() + "&c."));
+    }
+
+    /**
+     * Without this, a hopper (or dropper/dispenser) sitting next to the death
+     * spot siphons the loot out within a tick or two of the chest appearing -
+     * then tick()'s "remove once emptied" cleanup deletes the chest right
+     * after, looking exactly like it despawned with nothing in it.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onHopperPull(InventoryMoveItemEvent event) {
+        if (!(event.getSource().getHolder() instanceof Chest chest)) return;
+        if (chests.containsKey(key(chest.getLocation()))) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
