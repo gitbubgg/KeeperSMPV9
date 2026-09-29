@@ -7,5 +7,19 @@
   "block.minecraft.stripped_cherry_wood": "Stripped Songwood",
   "block.minecraft.cherry_planks": "Songwood Planks",
   "item.minecraft.cherry_log": "Songwood Log",
-  "item.minecraft.cherry_planks": "Songwood Planks"
+  "item.minecraft.cherry_planks": "Songwood Planks",
+  "block.minecraft.terracotta": "Carapace Shell",
+  "block.minecraft.white_terracotta": "Pale Carapace Shell",
+  "block.minecraft.orange_terracotta": "Amber Carapace Shell",
+  "block.minecraft.yellow_terracotta": "Sallow Carapace Shell",
+  "block.minecraft.brown_terracotta": "Umber Carapace Shell",
+  "block.minecraft.red_terracotta": "Crimson Carapace Shell",
+  "block.minecraft.light_gray_terracotta": "Ashen Carapace Shell",
+  "item.minecraft.terracotta": "Carapace Shell",
+  "item.minecraft.white_terracotta": "Pale Carapace Shell",
+  "item.minecraft.orange_terracotta": "Amber Carapace Shell",
+  "item.minecraft.yellow_terracotta": "Sallow Carapace Shell",
+  "item.minecraft.brown_terracotta": "Umber Carapace Shell",
+  "item.minecraft.red_terracotta": "Crimson Carapace Shell",
+  "item.minecraft.light_gray_terracotta": "Ashen Carapace Shell"
 }
