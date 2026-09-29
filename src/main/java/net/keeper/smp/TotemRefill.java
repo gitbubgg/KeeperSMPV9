@@ -19,18 +19,15 @@ import java.util.Random;
 
 /**
  * Toggled per player via /totemrefill. When a real totem pops, every other
- * empty inventory slot (and the offhand, if the totem popped from the main
- * hand) gets restocked with a totem - except the exact slot the totem just
- * popped from, which is left empty. Two of the restocked slots are decoys:
- * a Totem of Undying by material (so it looks identical, same name and
- * icon) that's tagged to never actually save them - EntityResurrectEvent
- * still fires for it since vanilla only checks the material, so it's
- * cancelled outright instead of triggering a real resurrection.
+ * empty hotbar slot (9 max, offhand never touched) gets restocked with a
+ * totem - except the exact slot the totem just popped from, which is left
+ * empty. Two of the restocked slots are decoys: a Totem of Undying by
+ * material (so it looks identical, same name and icon) that's tagged to
+ * never actually save them - EntityResurrectEvent still fires for it since
+ * vanilla only checks the material, so it's cancelled outright instead of
+ * triggering a real resurrection.
  */
 public class TotemRefill implements Listener {
-
-    /** Marker so a decoy slot in the "eligible for removal" pool doesn't collide with a real slot index. */
-    private static final int OFFHAND_SLOT = -1;
 
     private final KeeperPlugin plugin;
     private final NamespacedKey fakeKey;
@@ -64,7 +61,7 @@ public class TotemRefill implements Listener {
         int heldSlot = inv.getHeldItemSlot();
 
         List<Integer> filled = new ArrayList<>();
-        for (int slot = 0; slot < 36; slot++) {
+        for (int slot = 0; slot < 9; slot++) {
             if (fromMainHand && slot == heldSlot) continue;
             ItemStack item = inv.getItem(slot);
             if (item == null || item.getType() == Material.AIR) {
@@ -73,22 +70,9 @@ public class TotemRefill implements Listener {
             }
         }
 
-        boolean offhandFilled = false;
-        if (fromMainHand) {
-            ItemStack off = inv.getItemInOffHand();
-            if (off == null || off.getType() == Material.AIR) {
-                inv.setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
-                offhandFilled = true;
-            }
-        }
-
-        List<Integer> pool = new ArrayList<>(filled);
-        if (offhandFilled) pool.add(OFFHAND_SLOT);
-        Collections.shuffle(pool, random);
-        for (int i = 0; i < Math.min(2, pool.size()); i++) {
-            int slot = pool.get(i);
-            if (slot == OFFHAND_SLOT) inv.setItemInOffHand(fakeTotem());
-            else inv.setItem(slot, fakeTotem());
+        Collections.shuffle(filled, random);
+        for (int i = 0; i < Math.min(2, filled.size()); i++) {
+            inv.setItem(filled.get(i), fakeTotem());
         }
     }
 

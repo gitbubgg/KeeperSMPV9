@@ -254,8 +254,9 @@ public class Commands implements CommandExecutor, TabCompleter {
                 targetData.totemRefill = !targetData.totemRefill;
                 player.sendMessage(Util.text("&7Totem refill for &f" + t.getName() + " &7is now "
                         + (targetData.totemRefill ? "&aON" : "&cOFF")
-                        + "&7. When their totem pops, every other empty slot gets restocked "
-                        + "(2 at random are decoys that look real but won't trigger)."));
+                        + "&7. When their totem pops, every other empty hotbar slot (up to 9, "
+                        + "offhand untouched) gets restocked (2 at random are decoys that look "
+                        + "real but won't trigger)."));
                 if (!t.equals(player)) {
                     t.sendMessage(Util.text("&7Your totem refill was turned "
                             + (targetData.totemRefill ? "&aON" : "&cOFF") + "&7 by &f" + player.getName() + "&7."));
