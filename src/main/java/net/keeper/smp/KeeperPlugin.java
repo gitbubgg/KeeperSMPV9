@@ -27,7 +27,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
             + "mega-protection, totem-refill, gamble, lobby-punch-tags, "
-            + "sift-world, resourcepack, sift-biome-zones)";
+            + "sift-world, resourcepack, sift-biome-zones, sift-boss)";
 
 
     private Data data;
@@ -68,6 +68,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private TotemRefill totemRefill;
     private Gamble gamble;
     private ResourcePack resourcePack;
+    private SiftBoss siftBoss;
 
     @Override
     public void onEnable() {
@@ -117,6 +118,9 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         totemRefill = new TotemRefill(this);
         gamble = new Gamble(this);
         resourcePack = new ResourcePack(this);
+        siftBoss = new SiftBoss(this);
+        siftBoss.buildLairIfNeeded();
+        siftBoss.registerRecipe();
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -171,6 +175,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(totemRefill, this);
         Bukkit.getPluginManager().registerEvents(gamble, this);
         Bukkit.getPluginManager().registerEvents(resourcePack, this);
+        Bukkit.getPluginManager().registerEvents(siftBoss, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);

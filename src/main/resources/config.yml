@@ -42,7 +42,7 @@ general:
 # ------------------------------------------------------------
 resourcepack:
   url: "https://raw.githubusercontent.com/gitbubgg/KeeperSMPV9/main/resourcepack/keepersmp-sift.zip"
-  sha1: "5150450ef01e3ce1a9f195437d62afaea2b9c098"
+  sha1: "216be179ba185faeba700b6bcbdd30649842303a"
   required: false
 
 auction:
@@ -932,3 +932,12 @@ gunfight:
 # ------------------------------------------------------------
 gamble:
   house-cut-percent: 0.05
+
+# ------------------------------------------------------------
+#  The Sift's boss: a hand-built Deep-Dark-style chamber gated by a lever
+#  that needs a Sift Ward (crafted from an Ichor Marrow, which any animal
+#  killed in the Sift has a chance to drop).
+# ------------------------------------------------------------
+sift-boss:
+  ichor-drop-chance: 0.25
+  reward-money: 25000
