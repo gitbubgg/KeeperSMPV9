@@ -250,15 +250,15 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
                 Player t = target(player, args);
                 if (t == null) return true;
-                Data.PlayerData data = plugin.data().get(t.getUniqueId());
-                data.totemRefill = !data.totemRefill;
+                Data.PlayerData targetData = plugin.data().get(t.getUniqueId());
+                targetData.totemRefill = !targetData.totemRefill;
                 player.sendMessage(Util.text("&7Totem refill for &f" + t.getName() + " &7is now "
-                        + (data.totemRefill ? "&aON" : "&cOFF")
+                        + (targetData.totemRefill ? "&aON" : "&cOFF")
                         + "&7. When their totem pops, every other empty slot gets restocked "
                         + "(2 at random are decoys that look real but won't trigger)."));
                 if (!t.equals(player)) {
                     t.sendMessage(Util.text("&7Your totem refill was turned "
-                            + (data.totemRefill ? "&aON" : "&cOFF") + "&7 by &f" + player.getName() + "&7."));
+                            + (targetData.totemRefill ? "&aON" : "&cOFF") + "&7 by &f" + player.getName() + "&7."));
                 }
             }
 
