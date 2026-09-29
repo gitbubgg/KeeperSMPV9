@@ -69,6 +69,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Gamble gamble;
     private ResourcePack resourcePack;
     private SiftBoss siftBoss;
+    private SiftTerrain siftTerrain;
 
     @Override
     public void onEnable() {
@@ -120,6 +121,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         resourcePack = new ResourcePack(this);
         siftBoss = new SiftBoss(this);
         siftBoss.buildLairIfNeeded();
+        siftTerrain = new SiftTerrain(this);
         siftBoss.registerRecipe();
 
         Commands commands = new Commands(this);
@@ -176,6 +178,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(gamble, this);
         Bukkit.getPluginManager().registerEvents(resourcePack, this);
         Bukkit.getPluginManager().registerEvents(siftBoss, this);
+        Bukkit.getPluginManager().registerEvents(siftTerrain, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);

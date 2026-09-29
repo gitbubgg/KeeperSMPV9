@@ -42,7 +42,7 @@ general:
 # ------------------------------------------------------------
 resourcepack:
   url: "https://raw.githubusercontent.com/gitbubgg/KeeperSMPV9/GIT_SHA_PLACEHOLDER/resourcepack/keepersmp-sift.zip"
-  sha1: "a62b159eb84df59a6c1add7ba49f0cd9b68be26e"
+  sha1: "6b30bb953e7f217eb764fa4ed369c63ea55c146f"
   required: false
 
 auction:

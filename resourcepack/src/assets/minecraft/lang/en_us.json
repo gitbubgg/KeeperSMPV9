@@ -6,5 +6,9 @@
   "block.minecraft.stripped_cherry_wood": "Stripped Songwood",
   "block.minecraft.cherry_planks": "Songwood Planks",
   "item.minecraft.cherry_log": "Songwood Log",
-  "item.minecraft.cherry_planks": "Songwood Planks"
+  "item.minecraft.cherry_planks": "Songwood Planks",
+  "block.minecraft.dried_kelp_block": "Sift Sand",
+  "item.minecraft.dried_kelp_block": "Sift Sand",
+  "block.minecraft.wither_rose": "Sift Thorn",
+  "item.minecraft.wither_rose": "Sift Thorn"
 }
