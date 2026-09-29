@@ -27,7 +27,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
             + "mega-protection, totem-refill, gamble, lobby-punch-tags, "
-            + "sift-world, resourcepack)";
+            + "sift-world, resourcepack, sift-biome-zones)";
 
 
     private Data data;
@@ -216,13 +216,18 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
      * terrain, weather, day/night, mob spawns) rather than a hand-authored
      * custom dimension_type datapack - that path can register a broken
      * dimension and fail the whole server's next boot, which isn't a risk
-     * worth taking blind on a live server. Biome-specific decoration is a
-     * separate, later pass; this just guarantees the world exists.
+     * worth taking blind on a live server. SiftBiomeProvider zones it into
+     * a few regions (see its own docs for why only some biomes work this
+     * way); only affects chunks generated from here on, not ones already
+     * explored before this was added. Placed decoration (the boss's own
+     * sculk-covered lair, etc.) is a separate, later pass.
      */
     private void ensureSiftWorld() {
         String name = getConfig().getString("general.rtp-sift-world", "sift");
         if (Bukkit.getWorld(name) != null) return;
-        World world = new WorldCreator(name).environment(World.Environment.NORMAL).createWorld();
+        World world = new WorldCreator(name).environment(World.Environment.NORMAL)
+                .biomeProvider(new SiftBiomeProvider())
+                .createWorld();
         if (world != null) {
             getLogger().info("Created the Sift world ('" + name + "').");
         } else {
