@@ -41,7 +41,7 @@ general:
 #  source files under resourcepack/src change.
 # ------------------------------------------------------------
 resourcepack:
-  url: "https://raw.githubusercontent.com/gitbubgg/KeeperSMPV9/main/resourcepack/keepersmp-sift.zip"
+  url: "https://raw.githubusercontent.com/gitbubgg/KeeperSMPV9/GIT_SHA_PLACEHOLDER/resourcepack/keepersmp-sift.zip"
   sha1: "216be179ba185faeba700b6bcbdd30649842303a"
   required: false
 

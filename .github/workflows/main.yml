@@ -19,6 +19,9 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+      - name: Pin resource pack URL to this exact commit
+        run: |
+          sed -i "s/GIT_SHA_PLACEHOLDER/${GITHUB_SHA}/" src/main/resources/config.yml
       - run: mvn -B clean package
       - uses: actions/upload-artifact@v4
         with:
