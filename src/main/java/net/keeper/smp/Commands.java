@@ -263,6 +263,8 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
             }
 
+            case "gamble" -> gamble(player, args);
+
             case "spectator" -> {
                 if (!rank.isStaff()) return deny(sender, Rank.MOD);
                 boolean spec = player.getGameMode() == GameMode.SPECTATOR;
@@ -583,6 +585,35 @@ public class Commands implements CommandExecutor, TabCompleter {
         return stack;
     }
 
+    private void gamble(Player player, String[] args) {
+        if (args.length == 0) {
+            player.sendMessage(Util.text("&cUsage: /gamble <player> <amount> &7| &c/gamble queue <amount> "
+                    + "&7| &c/gamble leave &7| &c/gamble accept &7| &c/gamble deny"));
+            return;
+        }
+        switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "accept" -> plugin.gamble().accept(player);
+            case "deny" -> plugin.gamble().deny(player);
+            case "leave" -> plugin.gamble().leaveQueue(player);
+            case "queue" -> {
+                if (args.length < 2) {
+                    player.sendMessage(Util.text("&cUsage: /gamble queue <amount>"));
+                    return;
+                }
+                plugin.gamble().queue(player, Util.parseAmount(args[1]));
+            }
+            default -> {
+                Player t = target(player, args);
+                if (t == null) return;
+                if (args.length < 2) {
+                    player.sendMessage(Util.text("&cUsage: /gamble <player> <amount>"));
+                    return;
+                }
+                plugin.gamble().challenge(player, t, Util.parseAmount(args[1]));
+            }
+        }
+    }
+
     private void auction(Player player, String[] args) {
         if (args.length == 0) {
             plugin.gui().openAuction(player, 0, false);
@@ -818,6 +849,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "rtp" -> out.addAll(List.of("nether", "end"));
                 case "ownerkit" -> out.addAll(List.of("1", "503", "709"));
+                case "gamble" -> {
+                    out.addAll(List.of("queue", "accept", "deny", "leave"));
+                    for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
+                }
                 case "eco" -> out.addAll(List.of("give", "take", "set"));
                 case "keeper" -> out.addAll(List.of("reload", "stripe", "status"));
                 case "buildspawn" -> out.add("confirm");

@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -75,7 +76,12 @@ public class Teleport implements Listener {
         return true;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    /**
+     * Runs before Protect's spawn-PvP cancel (which is default priority), so
+     * punching someone in the lobby still tags both of you for combat even
+     * though Protect stops the hit from actually landing.
+     */
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         Player victim = event.getEntity() instanceof Player p ? p : null;
         Player attacker = null;

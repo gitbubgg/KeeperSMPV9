@@ -912,3 +912,10 @@ gunfight:
     300:  { name: "&eShotgun",       material: CROSSBOW,  power: 2, multishot: true }
     1000: { name: "&6Sniper Rifle",  material: BOW,       power: 4 }
     3000: { name: "&cRailgun",       material: CROSSBOW,  power: 5, multishot: true }
+
+# ------------------------------------------------------------
+#  /gamble  -  coin-flip wager, either directly against a named player
+#  (accept/deny) or against whoever else queues the same amount.
+# ------------------------------------------------------------
+gamble:
+  house-cut-percent: 0.05

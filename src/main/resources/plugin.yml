@@ -146,6 +146,8 @@ commands:
     aliases: [cosmetic]
   totemrefill:
     description: Owner - toggle chaotic totem refill for a player. /totemrefill <player>
+  gamble:
+    description: Wager money on a coin flip. /gamble <player> <amount>, /gamble queue <amount> for a random opponent, /gamble accept, /gamble deny, /gamble leave.
 
 permissions:
   keeper.staff.mod:

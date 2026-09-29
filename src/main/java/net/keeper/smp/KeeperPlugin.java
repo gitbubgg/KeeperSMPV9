@@ -24,7 +24,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
-            + "mega-protection, totem-refill)";
+            + "mega-protection, totem-refill, gamble, lobby-punch-tags)";
 
 
     private Data data;
@@ -63,6 +63,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private MegaSharpness megaSharpness;
     private MegaProtection megaProtection;
     private TotemRefill totemRefill;
+    private Gamble gamble;
 
     @Override
     public void onEnable() {
@@ -109,6 +110,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         megaSharpness = new MegaSharpness(this);
         megaProtection = new MegaProtection(this);
         totemRefill = new TotemRefill(this);
+        gamble = new Gamble(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -120,7 +122,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
                 "daily", "playtime", "upgrade", "forcetpahere", "gunfight", "ownerkit", "autoplace",
                 "giveshards", "smtable", "bounty", "trade", "sendshards", "baltop", "playtimetop",
-                "cosmetics", "totemrefill"
+                "cosmetics", "totemrefill", "gamble"
         };
         for (String name : names) {
             if (getCommand(name) == null) {
@@ -161,6 +163,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(megaSharpness, this);
         Bukkit.getPluginManager().registerEvents(megaProtection, this);
         Bukkit.getPluginManager().registerEvents(totemRefill, this);
+        Bukkit.getPluginManager().registerEvents(gamble, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -381,5 +384,9 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public MegaProtection megaProtection() {
         return megaProtection;
+    }
+
+    public Gamble gamble() {
+        return gamble;
     }
 }
