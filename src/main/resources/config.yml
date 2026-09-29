@@ -16,6 +16,8 @@ general:
   rtp-end-worlds: [world_the_end]
   rtp-end-radius: 200
   rtp-end-min-radius: 20
+  # The Sift's own dedicated world, created automatically on first startup.
+  rtp-sift-world: sift
   combat-tag-seconds: 20
   # Kill hostile mobs that wander into chunks where everyone nearby has
   # mob spawning switched off.
@@ -31,6 +33,17 @@ general:
   # (server's local clock).
   weekend-bonus-enabled: true
   weekend-bonus-multiplier: 2.0
+
+# ------------------------------------------------------------
+#  Client resource pack pushed to players on join - currently just the
+#  Sift reskins (Sift Stone, Sift Grass, Songwood). Re-run
+#  resourcepack/build.sh and update url/sha1 here whenever the pack's
+#  source files under resourcepack/src change.
+# ------------------------------------------------------------
+resourcepack:
+  url: "https://raw.githubusercontent.com/gitbubgg/KeeperSMPV9/main/resourcepack/keepersmp-sift.zip"
+  sha1: "5150450ef01e3ce1a9f195437d62afaea2b9c098"
+  required: false
 
 auction:
   # Cost to sponsor a listing (pin it to the top of /ah) is this fraction of

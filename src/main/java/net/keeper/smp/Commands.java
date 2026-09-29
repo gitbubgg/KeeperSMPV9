@@ -856,7 +856,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                     }
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
-                case "rtp" -> out.addAll(List.of("nether", "end"));
+                case "rtp" -> out.addAll(List.of("nether", "end", "sift"));
                 case "ownerkit" -> out.addAll(List.of("1", "503", "709"));
                 case "gamble" -> {
                     out.addAll(List.of("queue", "accept", "deny", "leave"));

@@ -1,0 +1,11 @@
+{
+  "block.minecraft.tuff": "Sift Stone",
+  "block.minecraft.mycelium": "Sift Grass",
+  "block.minecraft.cherry_log": "Songwood Log",
+  "block.minecraft.stripped_cherry_log": "Stripped Songwood Log",
+  "block.minecraft.cherry_wood": "Songwood",
+  "block.minecraft.stripped_cherry_wood": "Stripped Songwood",
+  "block.minecraft.cherry_planks": "Songwood Planks",
+  "item.minecraft.cherry_log": "Songwood Log",
+  "item.minecraft.cherry_planks": "Songwood Planks"
+}

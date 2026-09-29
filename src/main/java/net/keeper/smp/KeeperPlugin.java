@@ -1,6 +1,8 @@
 package net.keeper.smp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,7 +26,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
-            + "mega-protection, totem-refill, gamble, lobby-punch-tags)";
+            + "mega-protection, totem-refill, gamble, lobby-punch-tags, "
+            + "sift-world, resourcepack)";
 
 
     private Data data;
@@ -64,11 +67,13 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private MegaProtection megaProtection;
     private TotemRefill totemRefill;
     private Gamble gamble;
+    private ResourcePack resourcePack;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         Util.init(this);
+        ensureSiftWorld();
 
         Rank.loadAll(getConfig().getConfigurationSection("ranks"),
                 getConfig().getConfigurationSection("perks"));
@@ -111,6 +116,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         megaProtection = new MegaProtection(this);
         totemRefill = new TotemRefill(this);
         gamble = new Gamble(this);
+        resourcePack = new ResourcePack(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -164,6 +170,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(megaProtection, this);
         Bukkit.getPluginManager().registerEvents(totemRefill, this);
         Bukkit.getPluginManager().registerEvents(gamble, this);
+        Bukkit.getPluginManager().registerEvents(resourcePack, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);
@@ -201,6 +208,26 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
         getLogger().info("KeeperSMP enabled. Stripe: " + (stripe.enabled() ? "on" : "off"));
         getLogger().info("Build: " + BUILD);
+    }
+
+    /**
+     * Creates the Sift's dedicated world on first run so /rtp sift has
+     * somewhere to send people. This is a real, separate Bukkit world (own
+     * terrain, weather, day/night, mob spawns) rather than a hand-authored
+     * custom dimension_type datapack - that path can register a broken
+     * dimension and fail the whole server's next boot, which isn't a risk
+     * worth taking blind on a live server. Biome-specific decoration is a
+     * separate, later pass; this just guarantees the world exists.
+     */
+    private void ensureSiftWorld() {
+        String name = getConfig().getString("general.rtp-sift-world", "sift");
+        if (Bukkit.getWorld(name) != null) return;
+        World world = new WorldCreator(name).environment(World.Environment.NORMAL).createWorld();
+        if (world != null) {
+            getLogger().info("Created the Sift world ('" + name + "').");
+        } else {
+            getLogger().warning("Failed to create the Sift world ('" + name + "').");
+        }
     }
 
     @Override

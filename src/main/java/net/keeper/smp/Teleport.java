@@ -226,12 +226,16 @@ public class Teleport implements Listener {
                 target = dimension("general.rtp-end-worlds", World.Environment.THE_END);
                 label = "the End";
             }
+            case "sift" -> {
+                target = Bukkit.getWorld(plugin.getConfig().getString("general.rtp-sift-world", "sift"));
+                label = "the Sift";
+            }
             case "overworld", "world" -> {
                 target = world();
                 label = "the wild";
             }
             default -> {
-                player.sendMessage(Util.text("&cUsage: &f/rtp &7[nether|end]"));
+                player.sendMessage(Util.text("&cUsage: &f/rtp &7[nether|end|sift]"));
                 return;
             }
         }
