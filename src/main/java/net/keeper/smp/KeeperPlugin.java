@@ -24,7 +24,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
-            + "mega-protection)";
+            + "mega-protection, totem-refill)";
 
 
     private Data data;
@@ -62,6 +62,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private MacroGuard macroGuard;
     private MegaSharpness megaSharpness;
     private MegaProtection megaProtection;
+    private TotemRefill totemRefill;
 
     @Override
     public void onEnable() {
@@ -107,6 +108,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         macroGuard = new MacroGuard(this);
         megaSharpness = new MegaSharpness(this);
         megaProtection = new MegaProtection(this);
+        totemRefill = new TotemRefill(this);
 
         Commands commands = new Commands(this);
         String[] names = {
@@ -118,7 +120,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
                 "buildspawn", "spawnfence", "value", "lobby", "setlobby", "keeper",
                 "daily", "playtime", "upgrade", "forcetpahere", "gunfight", "ownerkit", "autoplace",
                 "giveshards", "smtable", "bounty", "trade", "sendshards", "baltop", "playtimetop",
-                "cosmetics"
+                "cosmetics", "totemrefill"
         };
         for (String name : names) {
             if (getCommand(name) == null) {
@@ -158,6 +160,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(macroGuard, this);
         Bukkit.getPluginManager().registerEvents(megaSharpness, this);
         Bukkit.getPluginManager().registerEvents(megaProtection, this);
+        Bukkit.getPluginManager().registerEvents(totemRefill, this);
 
         // tab list footer numbers
         Bukkit.getScheduler().runTaskTimer(this, () -> tablist.refresh(), 100L, 200L);

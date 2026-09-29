@@ -246,6 +246,22 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "shardshop" -> plugin.shards().openShop(player, 0);
             case "cosmetics" -> plugin.gui().openCosmetics(player);
 
+            case "totemrefill" -> {
+                if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
+                Player t = target(player, args);
+                if (t == null) return true;
+                Data.PlayerData data = plugin.data().get(t.getUniqueId());
+                data.totemRefill = !data.totemRefill;
+                player.sendMessage(Util.text("&7Totem refill for &f" + t.getName() + " &7is now "
+                        + (data.totemRefill ? "&aON" : "&cOFF")
+                        + "&7. When their totem pops, every other empty slot gets restocked "
+                        + "(2 at random are decoys that look real but won't trigger)."));
+                if (!t.equals(player)) {
+                    t.sendMessage(Util.text("&7Your totem refill was turned "
+                            + (data.totemRefill ? "&aON" : "&cOFF") + "&7 by &f" + player.getName() + "&7."));
+                }
+            }
+
             case "spectator" -> {
                 if (!rank.isStaff()) return deny(sender, Rank.MOD);
                 boolean spec = player.getGameMode() == GameMode.SPECTATOR;
@@ -815,7 +831,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 case "sell" -> out.add("all");
                 case "gunfight" -> out.addAll(List.of("leave", "setpos1", "setpos2"));
                 case "tpa", "tpahere", "forcetpa", "forcetpahere", "pay", "grantrank", "giveshards",
-                        "sendshards", "bounty" -> {
+                        "sendshards", "bounty", "totemrefill" -> {
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
                 }
                 case "trade" -> {

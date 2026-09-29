@@ -144,6 +144,8 @@ commands:
   cosmetics:
     description: Equip pets and trails you've bought from the shard shop.
     aliases: [cosmetic]
+  totemrefill:
+    description: Owner - toggle chaotic totem refill for a player. /totemrefill <player>
 
 permissions:
   keeper.staff.mod:
