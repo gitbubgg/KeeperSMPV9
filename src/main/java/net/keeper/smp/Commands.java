@@ -587,8 +587,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     private void gamble(Player player, String[] args) {
         if (args.length == 0) {
-            player.sendMessage(Util.text("&cUsage: /gamble <player> <amount> &7| &c/gamble queue <amount> "
-                    + "&7| &c/gamble leave &7| &c/gamble accept &7| &c/gamble deny"));
+            player.sendMessage(Util.text("&cUsage: /gamble <player> <amount|item> &7| "
+                    + "&c/gamble queue <amount|item> &7| &c/gamble leave &7| "
+                    + "&c/gamble accept &7| &c/gamble deny"));
             return;
         }
         switch (args[0].toLowerCase(Locale.ROOT)) {
@@ -597,19 +598,27 @@ public class Commands implements CommandExecutor, TabCompleter {
             case "leave" -> plugin.gamble().leaveQueue(player);
             case "queue" -> {
                 if (args.length < 2) {
-                    player.sendMessage(Util.text("&cUsage: /gamble queue <amount>"));
+                    player.sendMessage(Util.text("&cUsage: /gamble queue <amount|item>"));
                     return;
                 }
-                plugin.gamble().queue(player, Util.parseAmount(args[1]));
+                if (args[1].equalsIgnoreCase("item")) {
+                    plugin.gamble().queueItem(player);
+                } else {
+                    plugin.gamble().queue(player, Util.parseAmount(args[1]));
+                }
             }
             default -> {
                 Player t = target(player, args);
                 if (t == null) return;
                 if (args.length < 2) {
-                    player.sendMessage(Util.text("&cUsage: /gamble <player> <amount>"));
+                    player.sendMessage(Util.text("&cUsage: /gamble <player> <amount|item>"));
                     return;
                 }
-                plugin.gamble().challenge(player, t, Util.parseAmount(args[1]));
+                if (args[1].equalsIgnoreCase("item")) {
+                    plugin.gamble().challengeItem(player, t);
+                } else {
+                    plugin.gamble().challenge(player, t, Util.parseAmount(args[1]));
+                }
             }
         }
     }
@@ -883,6 +892,9 @@ public class Commands implements CommandExecutor, TabCompleter {
             out.addAll(plugin.crates().tiers().keySet());
         } else if (args.length == 2 && name.equals("eco")) {
             for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
+        } else if (args.length == 2 && name.equals("gamble") && !args[0].equalsIgnoreCase("accept")
+                && !args[0].equalsIgnoreCase("deny") && !args[0].equalsIgnoreCase("leave")) {
+            out.add("item");
         }
 
         String prefix = args[args.length - 1].toLowerCase(Locale.ROOT);

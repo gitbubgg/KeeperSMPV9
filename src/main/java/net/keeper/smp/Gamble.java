@@ -1,10 +1,12 @@
 package net.keeper.smp;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -14,21 +16,24 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Two ways to gamble money: /gamble <player> <amount> challenges a specific
- * player (accept/deny, same shape as /tpa); /gamble queue <amount> joins a
- * pool of players wagering that exact amount and gets auto-matched with
- * whoever else is waiting there, first come first served. Either way, both
- * sides put the amount up, a coin flip decides the winner, and the winner
- * gets the pot minus a small house cut.
+ * Two ways to gamble, money or an item, and two ways to find an opponent:
+ * /gamble <player> <amount|item> challenges a specific player (accept/deny,
+ * same shape as /tpa); /gamble queue <amount|item> joins a pool of players
+ * wagering the same thing and gets auto-matched with whoever else is
+ * waiting there, first come first served. Either way, both sides put their
+ * wager up, a coin flip decides the winner, and the winner gets the pot -
+ * minus a small house cut for a money wager; an item wager pays out both
+ * items whole, no cut.
  */
 public class Gamble implements Listener {
 
-    public record Challenge(UUID from, double amount, long expiry) {
+    public record Challenge(UUID from, double amount, boolean itemMode, long expiry) {
     }
 
     private final KeeperPlugin plugin;
     private final Map<UUID, Challenge> challenges = new HashMap<>();
     private final Map<Double, Deque<UUID>> queues = new HashMap<>();
+    private final Deque<UUID> itemQueue = new ArrayDeque<>();
     private final Random random = new Random();
 
     public Gamble(KeeperPlugin plugin) {
@@ -50,13 +55,35 @@ public class Gamble implements Listener {
             sender.sendMessage(Util.text("&cYou don't have " + plugin.econ().fmt(amount) + "."));
             return;
         }
-        challenges.put(target.getUniqueId(), new Challenge(sender.getUniqueId(), amount,
+        challenges.put(target.getUniqueId(), new Challenge(sender.getUniqueId(), amount, false,
                 System.currentTimeMillis() + 60_000L));
         sender.sendMessage(Util.text("&aGamble challenge sent to &f" + target.getName()
                 + " &afor " + plugin.econ().fmt(amount) + ". It lasts 60s."));
         target.sendMessage(Util.text("&8&m----------------------------"));
         target.sendMessage(Util.text(" &f" + sender.getName() + " &7wants to gamble &f"
                 + plugin.econ().fmt(amount) + " &7with you - winner takes the pot."));
+        target.sendMessage(Util.text(" &a/gamble accept &7or &c/gamble deny"));
+        target.sendMessage(Util.text("&8&m----------------------------"));
+    }
+
+    /** Wagers whatever is in each player's main hand at the moment the challenge is accepted. */
+    public void challengeItem(Player sender, Player target) {
+        if (sender.equals(target)) {
+            sender.sendMessage(Util.text("&cYou cannot gamble against yourself."));
+            return;
+        }
+        ItemStack hand = sender.getInventory().getItemInMainHand();
+        if (hand.getType() == Material.AIR) {
+            sender.sendMessage(Util.text("&cHold the item you want to gamble first."));
+            return;
+        }
+        challenges.put(target.getUniqueId(), new Challenge(sender.getUniqueId(), 0, true,
+                System.currentTimeMillis() + 60_000L));
+        sender.sendMessage(Util.text("&aItem gamble challenge sent to &f" + target.getName()
+                + "&a. It lasts 60s. Keep the item you want to wager in your hand."));
+        target.sendMessage(Util.text("&8&m----------------------------"));
+        target.sendMessage(Util.text(" &f" + sender.getName()
+                + " &7wants to gamble items with you - whatever's in each of your hands, winner takes both."));
         target.sendMessage(Util.text(" &a/gamble accept &7or &c/gamble deny"));
         target.sendMessage(Util.text("&8&m----------------------------"));
     }
@@ -72,7 +99,11 @@ public class Gamble implements Listener {
             target.sendMessage(Util.text("&cThat player went offline."));
             return;
         }
-        resolve(sender, target, challenge.amount());
+        if (challenge.itemMode()) {
+            resolveItems(sender, target);
+        } else {
+            resolve(sender, target, challenge.amount());
+        }
     }
 
     public void deny(Player target) {
@@ -108,8 +139,24 @@ public class Gamble implements Listener {
         tryMatch(amount);
     }
 
+    /** Wildcard pool: matched with whoever else is queued, whatever they're each holding. */
+    public void queueItem(Player player) {
+        if (itemQueue.contains(player.getUniqueId())) {
+            player.sendMessage(Util.text("&7You are already queued to gamble an item."));
+            return;
+        }
+        if (player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+            player.sendMessage(Util.text("&cHold the item you want to gamble first."));
+            return;
+        }
+        itemQueue.add(player.getUniqueId());
+        player.sendMessage(Util.text("&aQueued to gamble your item with a random player. "
+                + "Keep it in your hand. Waiting for an opponent..."));
+        tryMatchItems();
+    }
+
     public void leaveQueue(Player player) {
-        boolean removed = false;
+        boolean removed = itemQueue.remove(player.getUniqueId());
         for (Deque<UUID> pool : queues.values()) {
             removed |= pool.remove(player.getUniqueId());
         }
@@ -140,6 +187,22 @@ public class Gamble implements Listener {
                 continue;
             }
             resolve(a, b, amount);
+        }
+    }
+
+    private void tryMatchItems() {
+        while (itemQueue.size() >= 2) {
+            Player a = Bukkit.getPlayer(itemQueue.poll());
+            Player b = Bukkit.getPlayer(itemQueue.poll());
+            if (a == null || !a.isOnline()) {
+                if (b != null && b.isOnline()) itemQueue.addFirst(b.getUniqueId());
+                continue;
+            }
+            if (b == null || !b.isOnline()) {
+                itemQueue.addFirst(a.getUniqueId());
+                continue;
+            }
+            resolveItems(a, b);
         }
     }
 
@@ -174,11 +237,49 @@ public class Gamble implements Listener {
                 + plugin.econ().fmt(payout) + " &7off &f" + loser.getName() + "&7."));
     }
 
+    private void resolveItems(Player a, Player b) {
+        ItemStack itemA = a.getInventory().getItemInMainHand();
+        ItemStack itemB = b.getInventory().getItemInMainHand();
+        if (itemA.getType() == Material.AIR) {
+            a.sendMessage(Util.text("&cYou need an item in hand to gamble."));
+            b.sendMessage(Util.text("&c" + a.getName() + " isn't holding an item anymore - gamble cancelled."));
+            return;
+        }
+        if (itemB.getType() == Material.AIR) {
+            b.sendMessage(Util.text("&cYou need an item in hand to gamble."));
+            a.sendMessage(Util.text("&c" + b.getName() + " isn't holding an item anymore - gamble cancelled."));
+            return;
+        }
+
+        ItemStack wagerA = itemA.clone();
+        ItemStack wagerB = itemB.clone();
+        a.getInventory().setItemInMainHand(null);
+        b.getInventory().setItemInMainHand(null);
+
+        Player winner = random.nextBoolean() ? a : b;
+        Player loser = winner == a ? b : a;
+        giveItem(winner, wagerA);
+        giveItem(winner, wagerB);
+
+        winner.sendMessage(Util.text("&aYou won the item gamble against &f" + loser.getName()
+                + "&a! You get both items."));
+        loser.sendMessage(Util.text("&cYou lost your item gambling against &f" + winner.getName() + "&c."));
+        Bukkit.broadcast(Util.text("&6[Gamble] &f" + winner.getName()
+                + " &7won an item gamble against &f" + loser.getName() + "&7."));
+    }
+
+    private void giveItem(Player player, ItemStack item) {
+        for (ItemStack drop : player.getInventory().addItem(item).values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), drop);
+        }
+    }
+
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         challenges.remove(uuid);
         challenges.values().removeIf(c -> c.from().equals(uuid));
+        itemQueue.remove(uuid);
         for (Deque<UUID> pool : queues.values()) pool.remove(uuid);
     }
 }
