@@ -1,7 +1,5 @@
 package net.keeper.smp;
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -69,7 +67,7 @@ public class ResourcePack implements Listener {
         if (url.isBlank() || sha1Hex.isBlank()) return;
         byte[] hash = hexToBytes(sha1Hex);
         player.addResourcePack(PACK_ID, url, hash,
-                Component.text("The Sift has its own look."), false);
+                "The Sift has its own look.", false);
     }
 
     private void remove(Player player) {
