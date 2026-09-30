@@ -42,7 +42,7 @@ general:
 # ------------------------------------------------------------
 resourcepack:
   url: "https://raw.githubusercontent.com/gitbubgg/KeeperSMPV9/GIT_SHA_PLACEHOLDER/resourcepack/keepersmp-sift.zip"
-  sha1: "6b30bb953e7f217eb764fa4ed369c63ea55c146f"
+  sha1: "e7742aea5800686a1f63ab3aa14d87e79f597d68"
   required: false
 
 auction:
@@ -940,4 +940,6 @@ gamble:
 # ------------------------------------------------------------
 sift-boss:
   ichor-drop-chance: 0.25
+  chitin-drop-chance: 0.35
+  whisper-drop-chance: 0.10
   reward-money: 25000

@@ -113,15 +113,33 @@ public class SiftBoss implements Listener {
 
     // ---------------- animal drop ----------------
 
+    private ItemStack chitinFragment() {
+        return Util.item(Material.PRISMARINE_SHARD, 1, "&dChitin Fragment",
+                "&7Shed by animals in the Sift.");
+    }
+
+    private ItemStack wardensWhisper() {
+        return Util.item(Material.PHANTOM_MEMBRANE, 1, "&5&lWarden's Whisper",
+                "&7A rare trace the Sift's animals carry.");
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onAnimalDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Animals)) return;
         World sift = Bukkit.getWorld(plugin.getConfig().getString("general.rtp-sift-world", "sift"));
         if (sift == null || !event.getEntity().getWorld().equals(sift)) return;
         if (event.getEntity().getKiller() == null) return;
-        double chance = plugin.getConfig().getDouble("sift-boss.ichor-drop-chance", 0.25);
-        if (Math.random() < chance) {
+        double ichorChance = plugin.getConfig().getDouble("sift-boss.ichor-drop-chance", 0.25);
+        if (Math.random() < ichorChance) {
             event.getDrops().add(ichorMarrow());
+        }
+        double chitinChance = plugin.getConfig().getDouble("sift-boss.chitin-drop-chance", 0.35);
+        if (Math.random() < chitinChance) {
+            event.getDrops().add(chitinFragment());
+        }
+        double whisperChance = plugin.getConfig().getDouble("sift-boss.whisper-drop-chance", 0.10);
+        if (Math.random() < whisperChance) {
+            event.getDrops().add(wardensWhisper());
         }
     }
 
