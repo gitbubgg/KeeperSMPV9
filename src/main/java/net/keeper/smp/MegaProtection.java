@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A Protection stand-in with no level cap, same idea as MegaSharpness: a
- * plain long tagged onto armor via PersistentDataContainer rather than a
+ * A Protection stand-in with no level cap: a plain long tagged onto armor
+ * via PersistentDataContainer rather than a
  * real Enchantment (capped at 255 by Paper regardless of what the
  * enchantment itself declares as its max level). Reduces incoming damage
  * by a percentage summed across every worn piece that carries the tag,

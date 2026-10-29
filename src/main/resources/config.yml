@@ -818,6 +818,11 @@ deathchest:
 #  This many "blind" breaks within the window pings online staff.
 #  Staff/owner ranks are never flagged.
 # ------------------------------------------------------------
+anticheat:
+  # Master switch for XrayGuard + MacroGuard below, flippable in-game
+  # with /anticheat (Owner only) without needing a restart.
+  enabled: true
+
 xray:
   window-seconds: 120
   alert-threshold: 3

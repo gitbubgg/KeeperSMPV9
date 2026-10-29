@@ -41,6 +41,7 @@ public class XrayGuard implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
+        if (!plugin.getConfig().getBoolean("anticheat.enabled", true)) return;
         Block block = event.getBlock();
         if (!WATCHED.contains(block.getType())) return;
         if (plugin.ranks().of(event.getPlayer()).isStaff()) return;

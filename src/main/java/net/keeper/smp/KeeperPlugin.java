@@ -25,8 +25,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "sell-everything, autoplace, deathchest, bounty, combatlog-kill, "
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
-            + "xray-guard, macro-guard, rtp-nether-end, more-spawners, mega-sharpness, "
-            + "mega-protection, totem-refill, gamble, lobby-punch-tags, "
+            + "xray-guard, macro-guard, rtp-nether-end, more-spawners, "
+            + "mega-protection, totem-refill, gamble, lobby-punch-tags, anticheat-toggle, "
             + "sift-world, resourcepack, sift-biome-zones, sift-boss)";
 
 
@@ -63,7 +63,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private BedrockGuard bedrockGuard;
     private XrayGuard xrayGuard;
     private MacroGuard macroGuard;
-    private MegaSharpness megaSharpness;
     private MegaProtection megaProtection;
     private TotemRefill totemRefill;
     private Gamble gamble;
@@ -114,7 +113,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         bedrockGuard = new BedrockGuard();
         xrayGuard = new XrayGuard(this);
         macroGuard = new MacroGuard(this);
-        megaSharpness = new MegaSharpness(this);
         megaProtection = new MegaProtection(this);
         totemRefill = new TotemRefill(this);
         gamble = new Gamble(this);
@@ -172,7 +170,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(bedrockGuard, this);
         Bukkit.getPluginManager().registerEvents(xrayGuard, this);
         Bukkit.getPluginManager().registerEvents(macroGuard, this);
-        Bukkit.getPluginManager().registerEvents(megaSharpness, this);
         Bukkit.getPluginManager().registerEvents(megaProtection, this);
         Bukkit.getPluginManager().registerEvents(totemRefill, this);
         Bukkit.getPluginManager().registerEvents(gamble, this);
@@ -416,10 +413,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public Cosmetics cosmetics() {
         return cosmetics;
-    }
-
-    public MegaSharpness megaSharpness() {
-        return megaSharpness;
     }
 
     public MegaProtection megaProtection() {

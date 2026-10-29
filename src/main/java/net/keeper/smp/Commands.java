@@ -144,13 +144,8 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (plugin.teleport().blockedByCombat(player)) return true;
                 String variant = args.length > 0 ? args[0] : "";
                 boolean legacy = variant.equals("1");
-                long axeSharpness = switch (variant) {
-                    case "503" -> 3000L;
-                    case "709" -> 3_000_000_000L;
-                    default -> 5L;
-                };
                 long armorProtection = variant.equals("709") ? 3_000_000_000L : 1000L;
-                ownerKit(player, legacy, axeSharpness, armorProtection);
+                ownerKit(player, legacy, armorProtection);
             }
 
             case "autoplace" -> {
@@ -261,6 +256,15 @@ public class Commands implements CommandExecutor, TabCompleter {
                     t.sendMessage(Util.text("&7Your totem refill was turned "
                             + (targetData.totemRefill ? "&aON" : "&cOFF") + "&7 by &f" + player.getName() + "&7."));
                 }
+            }
+
+            case "anticheat" -> {
+                if (!rank.atLeast(Rank.OWNER)) return deny(sender, Rank.OWNER);
+                boolean enabled = !plugin.getConfig().getBoolean("anticheat.enabled", true);
+                plugin.getConfig().set("anticheat.enabled", enabled);
+                plugin.saveConfig();
+                player.sendMessage(Util.text("&7Anti-cheat (x-ray + macro alerts) is now "
+                        + (enabled ? "&aON" : "&cOFF") + "&7."));
             }
 
             case "gamble" -> gamble(player, args);
@@ -517,7 +521,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
-    private void ownerKit(Player player, boolean legacy, long axeSharpnessRequested, long armorProtectionLevel) {
+    private void ownerKit(Player player, boolean legacy, long armorProtectionLevel) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
                 netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy, armorProtectionLevel),
@@ -530,16 +534,9 @@ public class Commands implements CommandExecutor, TabCompleter {
         ItemMeta axeMeta = axe.getItemMeta();
         axeMeta.displayName(Util.text("&5Owner's Axe"));
         axe.setItemMeta(axeMeta);
-        // 5 is the normal kit's baseline; a real Sharpness enchant is capped
-        // at 255 by Paper itself regardless of what's asked for, so anything
-        // higher rides as a Mega Sharpness bonus instead (see MegaSharpness) -
-        // an uncapped, plugin-tracked damage bonus, not a real enchant level.
         axe.addUnsafeEnchantment(Enchantment.SHARPNESS, 5);
         axe.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
         axe.addUnsafeEnchantment(Enchantment.MENDING, 1);
-        if (axeSharpnessRequested > 5) {
-            axe = plugin.megaSharpness().apply(axe, axeSharpnessRequested);
-        }
 
         ItemStack elytra = new ItemStack(Material.ELYTRA);
         elytra.addUnsafeEnchantment(Enchantment.UNBREAKING, 3);
@@ -857,7 +854,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "rtp" -> out.addAll(List.of("nether", "end", "sift"));
-                case "ownerkit" -> out.addAll(List.of("1", "503", "709"));
+                case "ownerkit" -> out.addAll(List.of("1", "709"));
                 case "gamble" -> {
                     out.addAll(List.of("queue", "accept", "deny", "leave"));
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());

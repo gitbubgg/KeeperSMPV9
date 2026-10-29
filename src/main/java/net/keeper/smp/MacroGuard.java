@@ -43,6 +43,7 @@ public class MacroGuard implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onAttack(EntityDamageByEntityEvent event) {
+        if (!plugin.getConfig().getBoolean("anticheat.enabled", true)) return;
         if (!(event.getDamager() instanceof Player player)) return;
         if (plugin.ranks().of(player).isStaff()) return;
         Tracker tracker = tracker(player);
@@ -62,6 +63,7 @@ public class MacroGuard implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
+        if (!plugin.getConfig().getBoolean("anticheat.enabled", true)) return;
         Player player = event.getPlayer();
         if (plugin.ranks().of(player).isStaff()) return;
         trackAction(player, tracker(player));
