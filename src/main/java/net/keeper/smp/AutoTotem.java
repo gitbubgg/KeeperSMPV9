@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class AutoTotem {
             boolean listed = names.stream().anyMatch(n -> n.equalsIgnoreCase(player.getName()));
             if (!listed) continue;
 
-            Inventory inv = player.getInventory();
+            PlayerInventory inv = player.getInventory();
             if (inv.getItemInOffHand().getType() == Material.TOTEM_OF_UNDYING) continue;
 
             int slot = findTotem(inv);
