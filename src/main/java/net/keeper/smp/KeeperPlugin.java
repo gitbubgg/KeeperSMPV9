@@ -26,7 +26,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "trade, sendshards, leaderboards, enchantbooks, cosmetics, "
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, "
-            + "mega-protection, totem-refill, gamble, lobby-punch-tags, anticheat-toggle, "
+            + "totem-refill, gamble, lobby-punch-tags, anticheat-toggle, "
             + "sift-world, resourcepack, sift-biome-zones, sift-boss, auto-totem)";
 
 
@@ -64,7 +64,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private BedrockGuard bedrockGuard;
     private XrayGuard xrayGuard;
     private MacroGuard macroGuard;
-    private MegaProtection megaProtection;
     private TotemRefill totemRefill;
     private Gamble gamble;
     private ResourcePack resourcePack;
@@ -115,7 +114,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         bedrockGuard = new BedrockGuard();
         xrayGuard = new XrayGuard(this);
         macroGuard = new MacroGuard(this);
-        megaProtection = new MegaProtection(this);
         totemRefill = new TotemRefill(this);
         gamble = new Gamble(this);
         resourcePack = new ResourcePack(this);
@@ -172,7 +170,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(bedrockGuard, this);
         Bukkit.getPluginManager().registerEvents(xrayGuard, this);
         Bukkit.getPluginManager().registerEvents(macroGuard, this);
-        Bukkit.getPluginManager().registerEvents(megaProtection, this);
         Bukkit.getPluginManager().registerEvents(totemRefill, this);
         Bukkit.getPluginManager().registerEvents(gamble, this);
         Bukkit.getPluginManager().registerEvents(resourcePack, this);
@@ -417,10 +414,6 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
 
     public Cosmetics cosmetics() {
         return cosmetics;
-    }
-
-    public MegaProtection megaProtection() {
-        return megaProtection;
     }
 
     public Gamble gamble() {

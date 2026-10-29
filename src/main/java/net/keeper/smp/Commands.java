@@ -144,8 +144,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if (plugin.teleport().blockedByCombat(player)) return true;
                 String variant = args.length > 0 ? args[0] : "";
                 boolean legacy = variant.equals("1");
-                long armorProtection = variant.equals("709") ? 3_000_000_000L : 1000L;
-                ownerKit(player, legacy, armorProtection);
+                ownerKit(player, legacy);
             }
 
             case "autoplace" -> {
@@ -521,13 +520,13 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     /** Clears the player's inventory and hands them the fixed owner loadout, always at full durability. */
-    private void ownerKit(Player player, boolean legacy, long armorProtectionLevel) {
+    private void ownerKit(Player player, boolean legacy) {
         player.getInventory().clear();
         player.getInventory().setArmorContents(new ItemStack[]{
-                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy, armorProtectionLevel),
-                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6, legacy, armorProtectionLevel),
-                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6, legacy, armorProtectionLevel),
-                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6, legacy, armorProtectionLevel)
+                netheriteArmor(Material.NETHERITE_BOOTS, Enchantment.FEATHER_FALLING, 6, legacy),
+                netheriteArmor(Material.NETHERITE_LEGGINGS, Enchantment.PROTECTION, 6, legacy),
+                netheriteArmor(Material.NETHERITE_CHESTPLATE, Enchantment.PROTECTION, 6, legacy),
+                netheriteArmor(Material.NETHERITE_HELMET, Enchantment.PROTECTION, 6, legacy)
         });
 
         ItemStack axe = new ItemStack(Material.NETHERITE_AXE);
@@ -570,15 +569,13 @@ public class Commands implements CommandExecutor, TabCompleter {
         player.sendMessage(Util.text("&8&m----------------------------"));
     }
 
-    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level, boolean legacy,
-                                      long megaProtectionLevel) {
+    private ItemStack netheriteArmor(Material material, Enchantment mainEnchant, int level, boolean legacy) {
         ItemStack stack = new ItemStack(material);
         stack.addUnsafeEnchantment(mainEnchant, level);
         stack.addUnsafeEnchantment(Enchantment.UNBREAKING, legacy ? 3 : 50);
         if (!legacy) stack.addUnsafeEnchantment(Enchantment.BLAST_PROTECTION, 6);
         stack.addUnsafeEnchantment(Enchantment.THORNS, 3);
         stack.addUnsafeEnchantment(Enchantment.MENDING, 1);
-        if (!legacy) stack = plugin.megaProtection().apply(stack, megaProtectionLevel);
         return stack;
     }
 
@@ -854,7 +851,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 case "auction" -> out.addAll(List.of("sell", "confirm", "cancel", "mine", "help", "sponsor"));
                 case "rtp" -> out.addAll(List.of("nether", "end", "sift"));
-                case "ownerkit" -> out.addAll(List.of("1", "709"));
+                case "ownerkit" -> out.addAll(List.of("1"));
                 case "gamble" -> {
                     out.addAll(List.of("queue", "accept", "deny", "leave"));
                     for (Player online : Bukkit.getOnlinePlayers()) out.add(online.getName());
