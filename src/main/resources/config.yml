@@ -823,6 +823,14 @@ anticheat:
   # with /anticheat (Owner only) without needing a restart.
   enabled: true
 
+# ------------------------------------------------------------
+#  Players listed here always have a totem auto-pulled from their
+#  main inventory into their offhand the moment it isn't one already.
+# ------------------------------------------------------------
+auto-totem:
+  players:
+    - ".Happyvids3312"
+
 xray:
   window-seconds: 120
   alert-threshold: 3

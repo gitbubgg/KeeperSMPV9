@@ -27,7 +27,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
             + "rank-ping, sponsored-auctions, weekend-bonus, bedrock-guard, "
             + "xray-guard, macro-guard, rtp-nether-end, more-spawners, "
             + "mega-protection, totem-refill, gamble, lobby-punch-tags, anticheat-toggle, "
-            + "sift-world, resourcepack, sift-biome-zones, sift-boss)";
+            + "sift-world, resourcepack, sift-biome-zones, sift-boss, auto-totem)";
 
 
     private Data data;
@@ -60,6 +60,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
     private Trade trade;
     private Leaderboard leaderboard;
     private Cosmetics cosmetics;
+    private AutoTotem autoTotem;
     private BedrockGuard bedrockGuard;
     private XrayGuard xrayGuard;
     private MacroGuard macroGuard;
@@ -110,6 +111,7 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         trade = new Trade(this);
         leaderboard = new Leaderboard(this);
         cosmetics = new Cosmetics(this);
+        autoTotem = new AutoTotem(this);
         bedrockGuard = new BedrockGuard();
         xrayGuard = new XrayGuard(this);
         macroGuard = new MacroGuard(this);
@@ -210,6 +212,8 @@ public class KeeperPlugin extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskTimer(this, () -> deathChest.tick(), 100L, 100L);
         // cosmetic pet following and trail particles
         Bukkit.getScheduler().runTaskTimer(this, () -> cosmetics.tick(), 20L, 10L);
+        // keeps listed players' offhand topped up with a totem
+        Bukkit.getScheduler().runTaskTimer(this, () -> autoTotem.tick(), 20L, 20L);
 
         getLogger().info("KeeperSMP enabled. Stripe: " + (stripe.enabled() ? "on" : "off"));
         getLogger().info("Build: " + BUILD);
