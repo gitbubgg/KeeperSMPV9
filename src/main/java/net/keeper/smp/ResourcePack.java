@@ -51,7 +51,20 @@ public class ResourcePack implements Listener {
         return world != null && world.getName().equals(siftWorldName());
     }
 
+    /**
+     * Bedrock accounts (Floodgate prefixes names with '.', same convention
+     * used for the staff list in config.yml) can't use a Java-format
+     * resource pack at all - their client has no way to parse the zip, and
+     * trying anyway throws Minecraft's generic "resource pack failed to
+     * load, see minecraft.net" error. Not a bug in the pack; just never
+     * send it to them in the first place.
+     */
+    private boolean isBedrock(Player player) {
+        return player.getName().startsWith(".");
+    }
+
     private void apply(Player player) {
+        if (isBedrock(player)) return;
         String url;
         String sha1Hex;
         try (InputStream in = plugin.getResource("config.yml")) {
