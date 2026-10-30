@@ -237,6 +237,16 @@ jobs:
             # stays bound to its own fixed "port:" value regardless, which
             # nothing external can reach.
             sed -i 's/^\( *\)clone-remote-port: false$/\1clone-remote-port: true/' geyser-config.yml
+            # Geyser's own integrated resource pack (for custom block/item
+            # mapping - nothing to do with KeeperSMP's Sift pack, which
+            # already skips Bedrock players entirely) was failing to
+            # validate on Bedrock clients, and force-resource-packs meant
+            # that failure blocked the join outright with a generic
+            # "resource pack failed to load" error naming a different block
+            # each time. Disabling both removes the one remaining pack
+            # actually being pushed to Bedrock players.
+            sed -i 's/^\( *\)enable-integrated-pack: true$/\1enable-integrated-pack: false/' geyser-config.yml
+            sed -i 's/^\( *\)force-resource-packs: true$/\1force-resource-packs: false/' geyser-config.yml
             echo "put geyser-config.yml plugins/Geyser-Spigot/config.yml" | sshpass -e sftp \
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
