@@ -117,7 +117,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -P "$port" \
-            "${user}@${host}"
+            "${user}@${host}" || true
 
           if [ -f server.properties ]; then
             if grep -q '^spawn-protection=' server.properties; then
@@ -134,7 +134,7 @@ jobs:
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
               -P "$port" \
-              "${user}@${host}"
+              "${user}@${host}" || true
           else
             echo "::warning::Could not download server.properties over SFTP; spawn-protection/accepts-transfers were left unchanged."
           fi
@@ -175,7 +175,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -P "$port" \
-            "${user}@${host}"
+            "${user}@${host}" || true
 
           if [ -f server-config.yml ]; then
             pip install --quiet ruamel.yaml
@@ -184,7 +184,7 @@ jobs:
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
               -P "$port" \
-              "${user}@${host}"
+              "${user}@${host}" || true
           else
             echo "::warning::Could not download config.yml over SFTP; new config keys were not merged."
           fi
@@ -227,7 +227,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             -P "$port" \
-            "${user}@${host}"
+            "${user}@${host}" || true
 
           if [ -f geyser-config.yml ]; then
             sed -i 's/^\( *\)transport: raknet$/\1transport: both/' geyser-config.yml
@@ -241,7 +241,7 @@ jobs:
               -o StrictHostKeyChecking=no \
               -o UserKnownHostsFile=/dev/null \
               -P "$port" \
-              "${user}@${host}"
+              "${user}@${host}" || true
           else
             echo "::warning::Could not download Geyser-Spigot's config.yml over SFTP; transport was left unchanged."
           fi
